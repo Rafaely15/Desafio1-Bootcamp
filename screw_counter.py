@@ -27,6 +27,7 @@ def contar_parafusos(
     funcionario_id: str | None = None,
     funcionario_nome: str | None = None,
     iou: float = 0.45,
+    imgsz: int | None = None,
     csv_path: str | Path | None = None,
 ) -> dict[str, Any]:
     image_path = Path(image_path)
@@ -49,7 +50,10 @@ def contar_parafusos(
     if model_key not in _MODEL_CACHE:
         _MODEL_CACHE[model_key] = YOLO(model_key)
     model = _MODEL_CACHE[model_key]
-    results = model.predict(source=str(image_path), conf=conf, iou=iou, verbose=False)
+    predict_kwargs = {"source": str(image_path), "conf": conf, "iou": iou, "verbose": False}
+    if imgsz:
+        predict_kwargs["imgsz"] = imgsz
+    results = model.predict(**predict_kwargs)
     result = results[0]
 
     boxes = result.boxes

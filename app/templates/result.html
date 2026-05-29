@@ -7,26 +7,46 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+  <header class="brandbar">
+    <div class="brandbar-inner">
+      <h1>Contador de Parafusos</h1>
+    </div>
+  </header>
+
   <main class="shell">
-    <header class="topbar">
-      <div class="brand">Resultado da contagem</div>
-      <nav class="nav">
-        <a class="button secondary" href="/">Nova contagem</a>
-        <a class="button secondary" href="/dashboard">Dashboard</a>
-      </nav>
-    </header>
+    <nav class="nav">
+      <a class="button secondary" href="/">Nova contagem</a>
+      <a class="button secondary" href="/dashboard">Dashboard</a>
+      <a class="button secondary" href="/export/csv/today">CSV do dia</a>
+    </nav>
 
     <section class="result-grid">
       <div>
-        <img class="result-image" src="{{ imagem_processada_url }}" alt="Imagem processada com caixas de detecção">
+        <img class="result-image" src="{{ imagem_processada_url }}" alt="Imagem processada com caixas de deteccao">
+        <div class="quality-ok">Foto processada. Revise a imagem antes de considerar a contagem final.</div>
       </div>
+
       <aside class="panel">
-        <h1>Total detectado</h1>
-        <div class="metric"><strong>{{ registro.total_parafusos }}</strong> parafusos</div>
-        <div class="metric">Confiança média<br><strong>{{ "%.2f"|format(registro.confianca_media) }}</strong></div>
-        <div class="metric">Funcionário<br><strong>{{ registro.funcionario_nome }}</strong></div>
-        <div class="metric">Data e hora<br>{{ registro.data_hora.strftime("%d/%m/%Y %H:%M:%S") }}</div>
-        <a class="button" href="/">Fazer nova contagem</a>
+        <div class="success-count">
+          <span>Contagem estimada</span>
+          <strong>{{ registro.total_parafusos }}</strong>
+          <span>parafusos</span>
+        </div>
+
+        <div class="metric">Confianca media<strong>{{ "%.2f"|format(registro.confianca_media) }}</strong></div>
+        <div class="metric">Funcionario<strong>{{ registro.funcionario_nome }}</strong></div>
+        {% if registro.funcionario_id %}<div class="metric">Matricula/ID<strong>{{ registro.funcionario_id }}</strong></div>{% endif %}
+        {% if registro.pedido %}<div class="metric">Pedido/lote<strong>{{ registro.pedido }}</strong></div>{% endif %}
+        <div class="metric">Data e hora<strong>{{ registro.data_hora.strftime("%d/%m/%Y %H:%M:%S") }}</strong></div>
+
+        <form action="/record/{{ registro.id }}/correct" method="post">
+          <h3>A contagem esta correta?</h3>
+          <label for="total_corrigido">Contagem final</label>
+          <input id="total_corrigido" name="total_corrigido" type="number" min="0" value="{{ registro.total_parafusos }}" required>
+          <label for="observacao">Observacao da conferencia</label>
+          <textarea id="observacao" name="observacao">{{ registro.observacao or "" }}</textarea>
+          <button type="submit">Salvar confirmacao/correcao</button>
+        </form>
       </aside>
     </section>
   </main>

@@ -7,26 +7,34 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+  <header class="brandbar">
+    <div class="brandbar-inner">
+      <h1>Contador de Parafusos</h1>
+    </div>
+  </header>
+
   <main class="shell">
-    <header class="topbar">
-      <div class="brand">Dashboard de contagens</div>
-      <nav class="nav">
-        <a class="button secondary" href="/">Nova contagem</a>
-        <a class="button secondary" href="/export/csv">Exportar CSV</a>
-        <a class="button secondary" href="/export/csv/today">CSV de hoje</a>
-      </nav>
-    </header>
+    <nav class="nav">
+      <a class="button secondary" href="/">Nova contagem</a>
+      <a class="button secondary" href="/export/csv">Exportar CSV geral</a>
+      <a class="button secondary" href="/export/csv/today">CSV do dia</a>
+    </nav>
 
     <section class="table-wrap">
       <table>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Funcionário</th>
+            <th>Funcionario</th>
+            <th>Matricula</th>
+            <th>Setor</th>
+            <th>Pedido/lote</th>
             <th>Data</th>
             <th>Hora</th>
-            <th>Total</th>
-            <th>Confiança</th>
+            <th>Automatica</th>
+            <th>Final</th>
+            <th>Status</th>
+            <th>Conf.</th>
             <th>Original</th>
             <th>Processada</th>
           </tr>
@@ -36,15 +44,20 @@
           <tr>
             <td>{{ item.id }}</td>
             <td>{{ item.funcionario_nome }}</td>
+            <td>{{ item.funcionario_id or "-" }}</td>
+            <td>{{ item.setor or "-" }}</td>
+            <td>{{ item.pedido or "-" }}</td>
             <td>{{ item.data_hora.strftime("%d/%m/%Y") }}</td>
             <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
             <td>{{ item.total_parafusos }}</td>
+            <td>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }}</td>
+            <td>{{ item.status or "confirmada" }}</td>
             <td>{{ "%.2f"|format(item.confianca_media) }}</td>
             <td><a href="{{ static_url_for_path(item.imagem_original) }}" target="_blank">abrir</a></td>
             <td><a href="{{ static_url_for_path(item.imagem_processada) }}" target="_blank">abrir</a></td>
           </tr>
           {% else %}
-          <tr><td colspan="8">Nenhuma contagem registrada.</td></tr>
+          <tr><td colspan="13">Nenhuma contagem registrada.</td></tr>
           {% endfor %}
         </tbody>
       </table>

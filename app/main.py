@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import csv
 import shutil
+import socket
 from datetime import date, datetime
 from pathlib import Path
 from uuid import uuid4
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import FileResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app import config
@@ -19,9 +21,38 @@ from app.services.screw_counter import contar_parafusos
 
 Base.metadata.create_all(bind=engine)
 
+
+def ensure_schema() -> None:
+    columns = {
+        "funcionario_id": "VARCHAR(80)",
+        "setor": "VARCHAR(120)",
+        "pedido": "VARCHAR(120)",
+        "total_corrigido": "INTEGER",
+        "status": "VARCHAR(40)",
+    }
+    with engine.begin() as conn:
+        existing = {row[1] for row in conn.execute(text("PRAGMA table_info(contagens)"))}
+        for name, sql_type in columns.items():
+            if name not in existing:
+                conn.execute(text(f"ALTER TABLE contagens ADD COLUMN {name} {sql_type}"))
+
+
+ensure_schema()
+
 app = FastAPI(title="Sistema de Contagem de Parafusos")
 app.mount("/static", StaticFiles(directory=config.BASE_DIR / "app" / "static"), name="static")
 templates = Jinja2Templates(directory=config.BASE_DIR / "app" / "templates")
+
+
+def get_local_ip() -> str:
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.connect(("8.8.8.8", 80))
+        ip = sock.getsockname()[0]
+        sock.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
 
 
 def static_url_for_path(path: str | Path) -> str:
@@ -32,6 +63,38 @@ def static_url_for_path(path: str | Path) -> str:
         return f"/static/{rel}"
     except ValueError:
         return str(path)
+
+
+def get_employee_from_cookie(request: Request) -> dict[str, str] | None:
+    name = request.cookies.get("funcionario_nome", "").strip()
+    employee_id = request.cookies.get("funcionario_id", "").strip()
+    sector = request.cookies.get("setor", "").strip()
+    if not name or not employee_id:
+        return None
+    return {"nome": name, "id": employee_id, "setor": sector}
+
+
+def employee_records_today(db: Session, employee: dict[str, str] | None) -> list[Contagem]:
+    if not employee:
+        return []
+    today = date.today()
+    records = (
+        db.query(Contagem)
+        .filter(Contagem.funcionario_id == employee["id"])
+        .order_by(Contagem.data_hora.desc())
+        .all()
+    )
+    return [item for item in records if item.data_hora and item.data_hora.date() == today]
+
+
+def employee_summary(records: list[Contagem]) -> dict[str, int]:
+    total_records = len(records)
+    total_screws = sum(
+        int(item.total_corrigido if item.total_corrigido is not None else item.total_parafusos)
+        for item in records
+    )
+    corrections = sum(1 for item in records if item.status == "corrigida")
+    return {"registros": total_records, "parafusos": total_screws, "correcoes": corrections}
 
 
 @app.get("/health")
@@ -45,17 +108,58 @@ def health() -> dict[str, object]:
 
 
 @app.get("/")
-def index(request: Request):
-    return templates.TemplateResponse(request, "index.html", {"conf": config.CONF_THRESHOLD})
+def index(request: Request, db: Session = Depends(get_db)):
+    employee = get_employee_from_cookie(request)
+    records = employee_records_today(db, employee)
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        {
+            "conf": config.CONF_THRESHOLD,
+            "local_ip": get_local_ip(),
+            "employee": employee,
+            "records_today": records,
+            "summary": employee_summary(records),
+        },
+    )
+
+
+@app.post("/login")
+def login(
+    funcionario_nome: str = Form(...),
+    funcionario_id: str = Form(...),
+    setor: str = Form(""),
+):
+    if not funcionario_nome.strip() or not funcionario_id.strip():
+        raise HTTPException(status_code=400, detail="Informe nome e matricula/ID.")
+    response = RedirectResponse(url="/", status_code=303)
+    max_age = 60 * 60 * 12
+    response.set_cookie("funcionario_nome", funcionario_nome.strip(), max_age=max_age, samesite="lax")
+    response.set_cookie("funcionario_id", funcionario_id.strip(), max_age=max_age, samesite="lax")
+    response.set_cookie("setor", setor.strip(), max_age=max_age, samesite="lax")
+    return response
+
+
+@app.post("/logout")
+def logout():
+    response = RedirectResponse(url="/", status_code=303)
+    for key in ("funcionario_nome", "funcionario_id", "setor"):
+        response.delete_cookie(key)
+    return response
 
 
 @app.post("/predict")
 def predict(
     request: Request,
-    funcionario_nome: str = Form(...),
+    pedido: str = Form(""),
+    observacao: str = Form(""),
+    modo_denso: str = Form(""),
     imagem: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
+    employee = get_employee_from_cookie(request)
+    if not employee:
+        return RedirectResponse(url="/", status_code=303)
     if not config.MODEL_PATH.exists():
         raise HTTPException(status_code=500, detail=f"Modelo nao encontrado: {config.MODEL_PATH}")
     suffix = Path(imagem.filename or "upload.jpg").suffix.lower() or ".jpg"
@@ -66,24 +170,36 @@ def predict(
     with upload_path.open("wb") as buffer:
         shutil.copyfileobj(imagem.file, buffer)
 
+    dense_enabled = modo_denso == "on"
+    conf = config.DENSE_CONF_THRESHOLD if dense_enabled else config.CONF_THRESHOLD
+    imgsz = config.DENSE_IMGSZ if dense_enabled else config.DEFAULT_IMGSZ
+
     try:
         result = contar_parafusos(
             image_path=upload_path,
             model_path=config.MODEL_PATH,
             output_dir=config.RESULTS_DIR,
-            conf=config.CONF_THRESHOLD,
-            funcionario_nome=funcionario_nome.strip(),
+            conf=conf,
+            funcionario_id=employee["id"],
+            funcionario_nome=employee["nome"],
             iou=config.IOU_THRESHOLD,
+            imgsz=imgsz,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     record = Contagem(
-        funcionario_nome=funcionario_nome.strip(),
+        funcionario_nome=employee["nome"],
+        funcionario_id=employee["id"],
+        setor=employee["setor"],
+        pedido=pedido.strip(),
         total_parafusos=result["total_parafusos"],
+        total_corrigido=result["total_parafusos"],
         confianca_media=result["confianca_media"],
         imagem_original=str(upload_path),
         imagem_processada=result["imagem_resultado"],
+        status="confirmada",
+        observacao=(observacao.strip() + (" | modo_denso" if dense_enabled else "")).strip(" |"),
     )
     db.add(record)
     db.commit()
@@ -100,6 +216,24 @@ def predict(
     )
 
 
+@app.post("/record/{record_id}/correct")
+def correct_record(
+    record_id: int,
+    total_corrigido: int = Form(...),
+    observacao: str = Form(""),
+    db: Session = Depends(get_db),
+):
+    record = db.query(Contagem).filter(Contagem.id == record_id).first()
+    if record is None:
+        raise HTTPException(status_code=404, detail="Registro nao encontrado")
+    record.total_corrigido = int(total_corrigido)
+    record.status = "corrigida" if int(total_corrigido) != record.total_parafusos else "confirmada"
+    if observacao.strip():
+        record.observacao = observacao.strip()
+    db.commit()
+    return RedirectResponse(url="/dashboard", status_code=303)
+
+
 @app.get("/dashboard")
 def dashboard(request: Request, db: Session = Depends(get_db)):
     registros = db.query(Contagem).order_by(Contagem.data_hora.desc()).limit(500).all()
@@ -114,9 +248,14 @@ def csv_response(registros: list[Contagem], filename: str) -> StreamingResponse:
     rows = [[
         "id",
         "funcionario_nome",
+        "funcionario_id",
+        "setor",
+        "pedido",
         "data_hora",
         "total_parafusos",
+        "total_corrigido",
         "confianca_media",
+        "status",
         "imagem_original",
         "imagem_processada",
         "observacao",
@@ -125,9 +264,14 @@ def csv_response(registros: list[Contagem], filename: str) -> StreamingResponse:
         rows.append([
             item.id,
             item.funcionario_nome,
+            item.funcionario_id or "",
+            item.setor or "",
+            item.pedido or "",
             item.data_hora.isoformat(sep=" ", timespec="seconds") if item.data_hora else "",
             item.total_parafusos,
+            item.total_corrigido if item.total_corrigido is not None else item.total_parafusos,
             f"{item.confianca_media:.4f}",
+            item.status or "",
             item.imagem_original,
             item.imagem_processada,
             item.observacao or "",

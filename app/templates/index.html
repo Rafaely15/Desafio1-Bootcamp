@@ -3,62 +3,166 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sistema de Contagem de Parafusos</title>
+  <title>Contador de Parafusos</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <div class="brand">Sistema de Contagem de Parafusos</div>
-      <nav class="nav">
-        <a class="button secondary" href="/dashboard">Dashboard</a>
-        <a class="button secondary" href="/export/csv/today">CSV de hoje</a>
-      </nav>
+  <aside class="sidebar">
+    <div class="sidebar-section faint">Area tecnica / supervisor</div>
+
+    <div class="sidebar-section">
+      <h2>Identificacao do funcionario</h2>
+      {% if employee %}
+        <div class="employee-badge">
+          <strong>{{ employee.nome }}</strong>
+          <span>{{ employee.id }}{% if employee.setor %} - {{ employee.setor }}{% endif %}</span>
+        </div>
+        <form action="/logout" method="post">
+          <button class="button secondary full" type="submit">Sair / trocar funcionario</button>
+        </form>
+      {% else %}
+        <form action="/login" method="post">
+          <label for="funcionario_nome">Nome do funcionario</label>
+          <input id="funcionario_nome" name="funcionario_nome" type="text" autocomplete="name" required>
+
+          <label for="funcionario_id">Matricula ou ID</label>
+          <input id="funcionario_id" name="funcionario_id" type="text" autocomplete="off" required>
+
+          <label for="setor">Setor (opcional)</label>
+          <input id="setor" name="setor" type="text" autocomplete="off">
+
+          <button type="submit">Entrar</button>
+        </form>
+      {% endif %}
+    </div>
+
+    <details class="sidebar-section">
+      <summary>Area tecnica / supervisor</summary>
+      <p class="small-muted">Modelo ativo: yolo11_screws-2</p>
+      <p class="small-muted">Confianca: {{ "%.2f"|format(conf) }}</p>
+      <a href="/dashboard">Dashboard geral</a><br>
+      <a href="/export/csv/today">CSV do dia</a>
+    </details>
+  </aside>
+
+  <section class="app-main">
+    <header class="brandbar">
+      <div class="brandbar-inner">
+        <h1>Contador de Parafusos</h1>
+      </div>
     </header>
 
-    <section class="layout">
-      <form class="panel" action="/predict" method="post" enctype="multipart/form-data">
-        <h1>Enviar foto</h1>
-        <p>Confiança mínima atual: {{ "%.2f"|format(conf) }}</p>
+    <main class="shell">
+      <div class="mobile-strip">
+        <span>Abrir no celular:</span>
+        <code>http://{{ local_ip }}:8000</code>
+        <span class="small-muted">mesma rede Wi-Fi</span>
+      </div>
 
-        <label for="funcionario_nome">Nome do funcionário</label>
-        <input id="funcionario_nome" name="funcionario_nome" type="text" autocomplete="name" required>
+      <section class="guide-card wide-guide">
+        <div class="guide-title">Formato ideal</div>
+        <div class="guide-image">
+          <img src="/static/assets/capture_guide.png" alt="Guia de captura">
+        </div>
+        <div class="guide-labels">
+          <div>Mantenha a camera nivelada</div>
+          <div>Boa iluminacao</div>
+          <div>Distancia ideal</div>
+        </div>
+      </section>
 
-        <label for="imagem">Tirar foto ou enviar imagem</label>
-        <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
-        <img id="preview" class="preview" alt="Prévia da imagem selecionada">
+      {% if not employee %}
+        <div class="panel notice-panel">
+          Informe nome e matricula na lateral para liberar a captura e a contagem.
+        </div>
+      {% else %}
+        <section class="panel capture-panel">
+          <div class="quality-ok">
+            Funcionario ativo: <strong>{{ employee.nome }} - {{ employee.id }}</strong>.
+            As proximas contagens serao registradas automaticamente neste usuario.
+          </div>
 
-        <p id="file-error" class="error-note" hidden>Selecione uma imagem válida.</p>
-        <button type="submit">Contar parafusos</button>
-      </form>
+          <form action="/predict" method="post" enctype="multipart/form-data">
+            <div class="form-grid">
+              <div>
+                <label for="pedido">Numero do pedido ou lote (opcional)</label>
+                <input id="pedido" name="pedido" type="text" autocomplete="off">
+              </div>
+              <div>
+                <label for="observacao">Observacoes (opcional)</label>
+                <input id="observacao" name="observacao" type="text" autocomplete="off">
+              </div>
+            </div>
 
-      <aside class="panel">
-        <h2>Para melhorar a contagem</h2>
-        <ol class="tips">
-          <li>Use fundo claro e uniforme.</li>
-          <li>Evite reflexos.</li>
-          <li>Tire a foto de cima.</li>
-          <li>Mantenha todos os parafusos visíveis.</li>
-          <li>Evite parafusos muito sobrepostos.</li>
-          <li>Use boa iluminação.</li>
-          <li>Mantenha a câmera estável.</li>
-          <li>Não corte nenhum parafuso na borda da imagem.</li>
-          <li>Limpe a lente da câmera.</li>
-          <li>Confira a imagem antes de enviar.</li>
-        </ol>
-      </aside>
-    </section>
-  </main>
+            <label for="imagem">Arraste a imagem ou procure arquivos</label>
+            <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
+            <img id="preview" class="preview" alt="Previa da imagem selecionada">
+
+            <label class="check-row">
+              <input type="checkbox" name="modo_denso">
+              <span>Modo para muitos parafusos juntos</span>
+            </label>
+            <p class="small-muted">Use este modo quando os parafusos estiverem encostados ou parcialmente sobrepostos. Ele e mais sensivel e pode demorar um pouco mais.</p>
+
+            <button class="full" type="submit">Contar parafusos</button>
+          </form>
+        </section>
+
+        <section class="history-panel">
+          <h2>Meus registros de hoje</h2>
+          <div class="metric-grid">
+            <div class="metric">Conferencias<strong>{{ summary.registros }}</strong></div>
+            <div class="metric">Parafusos<strong>{{ summary.parafusos }}</strong></div>
+            <div class="metric">Correcoes<strong>{{ summary.correcoes }}</strong></div>
+          </div>
+
+          <div class="table-wrap compact">
+            <table>
+              <thead>
+                <tr>
+                  <th>Horario</th>
+                  <th>Pedido/lote</th>
+                  <th>Automatica</th>
+                  <th>Final</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in records_today %}
+                <tr>
+                  <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
+                  <td>{{ item.pedido or "-" }}</td>
+                  <td>{{ item.total_parafusos }}</td>
+                  <td>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }}</td>
+                  <td>{{ item.status or "confirmada" }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5">Nenhum registro salvo hoje.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="nav">
+            <a class="button secondary" href="/export/csv/today">Baixar CSV do dia</a>
+            <a class="button secondary" href="/dashboard">Dashboard geral</a>
+          </div>
+        </section>
+      {% endif %}
+    </main>
+  </section>
 
   <script>
     const input = document.querySelector("#imagem");
     const preview = document.querySelector("#preview");
-    input.addEventListener("change", () => {
-      const file = input.files[0];
-      if (!file) return;
-      preview.src = URL.createObjectURL(file);
-      preview.style.display = "block";
-    });
+    if (input && preview) {
+      input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file) return;
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+      });
+    }
   </script>
 </body>
 </html>
