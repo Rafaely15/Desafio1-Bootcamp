@@ -153,7 +153,6 @@ def predict(
     request: Request,
     pedido: str = Form(""),
     observacao: str = Form(""),
-    modo_denso: str = Form(""),
     imagem: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
@@ -170,20 +169,16 @@ def predict(
     with upload_path.open("wb") as buffer:
         shutil.copyfileobj(imagem.file, buffer)
 
-    dense_enabled = modo_denso == "on"
-    conf = config.DENSE_CONF_THRESHOLD if dense_enabled else config.CONF_THRESHOLD
-    imgsz = config.DENSE_IMGSZ if dense_enabled else config.DEFAULT_IMGSZ
-
     try:
         result = contar_parafusos(
             image_path=upload_path,
             model_path=config.MODEL_PATH,
             output_dir=config.RESULTS_DIR,
-            conf=conf,
+            conf=config.CONF_THRESHOLD,
             funcionario_id=employee["id"],
             funcionario_nome=employee["nome"],
             iou=config.IOU_THRESHOLD,
-            imgsz=imgsz,
+            imgsz=config.DEFAULT_IMGSZ,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
@@ -199,7 +194,7 @@ def predict(
         imagem_original=str(upload_path),
         imagem_processada=result["imagem_resultado"],
         status="confirmada",
-        observacao=(observacao.strip() + (" | modo_denso" if dense_enabled else "")).strip(" |"),
+        observacao=observacao.strip(),
     )
     db.add(record)
     db.commit()
