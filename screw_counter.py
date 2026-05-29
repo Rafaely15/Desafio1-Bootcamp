@@ -11,6 +11,7 @@ from ultralytics import YOLO
 
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+_MODEL_CACHE: dict[str, YOLO] = {}
 
 
 def _safe_name(path: Path) -> str:
@@ -44,7 +45,10 @@ def contar_parafusos(
     if image is None:
         raise ValueError(f"Nao foi possivel ler a imagem: {image_path}")
 
-    model = YOLO(str(model_path))
+    model_key = str(model_path.resolve())
+    if model_key not in _MODEL_CACHE:
+        _MODEL_CACHE[model_key] = YOLO(model_key)
+    model = _MODEL_CACHE[model_key]
     results = model.predict(source=str(image_path), conf=conf, iou=iou, verbose=False)
     result = results[0]
 

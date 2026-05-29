@@ -46,7 +46,7 @@ def health() -> dict[str, object]:
 
 @app.get("/")
 def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "conf": config.CONF_THRESHOLD})
+    return templates.TemplateResponse(request, "index.html", {"conf": config.CONF_THRESHOLD})
 
 
 @app.post("/predict")
@@ -90,9 +90,9 @@ def predict(
     db.refresh(record)
 
     return templates.TemplateResponse(
+        request,
         "result.html",
         {
-            "request": request,
             "registro": record,
             "imagem_original_url": static_url_for_path(record.imagem_original),
             "imagem_processada_url": static_url_for_path(record.imagem_processada),
@@ -104,8 +104,9 @@ def predict(
 def dashboard(request: Request, db: Session = Depends(get_db)):
     registros = db.query(Contagem).order_by(Contagem.data_hora.desc()).limit(500).all()
     return templates.TemplateResponse(
+        request,
         "dashboard.html",
-        {"request": request, "registros": registros, "static_url_for_path": static_url_for_path},
+        {"registros": registros, "static_url_for_path": static_url_for_path},
     )
 
 
