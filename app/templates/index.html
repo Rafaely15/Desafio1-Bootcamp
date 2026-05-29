@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistema de Contagem de Parafusos</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">Sistema de Contagem de Parafusos</div>
+      <nav class="nav">
+        <a class="button secondary" href="/dashboard">Dashboard</a>
+        <a class="button secondary" href="/export/csv/today">CSV de hoje</a>
+      </nav>
+    </header>
+
+    <section class="layout">
+      <form class="panel" action="/predict" method="post" enctype="multipart/form-data">
+        <h1>Enviar foto</h1>
+        <p>Confiança mínima atual: {{ "%.2f"|format(conf) }}</p>
+
+        <label for="funcionario_nome">Nome do funcionário</label>
+        <input id="funcionario_nome" name="funcionario_nome" type="text" autocomplete="name" required>
+
+        <label for="imagem">Tirar foto ou enviar imagem</label>
+        <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
+        <img id="preview" class="preview" alt="Prévia da imagem selecionada">
+
+        <p id="file-error" class="error-note" hidden>Selecione uma imagem válida.</p>
+        <button type="submit">Contar parafusos</button>
+      </form>
+
+      <aside class="panel">
+        <h2>Para melhorar a contagem</h2>
+        <ol class="tips">
+          <li>Use fundo claro e uniforme.</li>
+          <li>Evite reflexos.</li>
+          <li>Tire a foto de cima.</li>
+          <li>Mantenha todos os parafusos visíveis.</li>
+          <li>Evite parafusos muito sobrepostos.</li>
+          <li>Use boa iluminação.</li>
+          <li>Mantenha a câmera estável.</li>
+          <li>Não corte nenhum parafuso na borda da imagem.</li>
+          <li>Limpe a lente da câmera.</li>
+          <li>Confira a imagem antes de enviar.</li>
+        </ol>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const input = document.querySelector("#imagem");
+    const preview = document.querySelector("#preview");
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+      if (!file) return;
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+    });
+  </script>
+</body>
+</html>

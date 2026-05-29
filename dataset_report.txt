@@ -1,0 +1,28 @@
+Relatorio do dataset: C:\Users\Carla Batista\Desktop\desafio-1\dataset_detect
+
+[train]
+pasta imagens: dataset_detect\images\train - OK
+pasta labels: dataset_detect\labels\train - OK
+imagens: 2904
+labels: 2904
+imagens sem label: 0
+labels sem imagem: 0
+
+[val]
+pasta imagens: dataset_detect\images\val - OK
+pasta labels: dataset_detect\labels\val - OK
+imagens: 308
+labels: 308
+imagens sem label: 0
+labels sem imagem: 0
+
+[test]
+pasta imagens: dataset_detect\images\test - OK
+pasta labels: dataset_detect\labels\test - OK
+imagens: 119
+labels: 119
+imagens sem label: 0
+labels sem imagem: 0
+
+classes encontradas: [0]
+linhas com erro: 0

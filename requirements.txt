@@ -1,0 +1,12 @@
+ultralytics
+opencv-python
+pandas
+matplotlib
+numpy
+pyyaml
+fastapi
+uvicorn
+python-multipart
+sqlalchemy
+jinja2
+pillow

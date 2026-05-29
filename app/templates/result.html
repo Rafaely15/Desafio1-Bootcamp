@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultado da contagem</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">Resultado da contagem</div>
+      <nav class="nav">
+        <a class="button secondary" href="/">Nova contagem</a>
+        <a class="button secondary" href="/dashboard">Dashboard</a>
+      </nav>
+    </header>
+
+    <section class="result-grid">
+      <div>
+        <img class="result-image" src="{{ imagem_processada_url }}" alt="Imagem processada com caixas de detecção">
+      </div>
+      <aside class="panel">
+        <h1>Total detectado</h1>
+        <div class="metric"><strong>{{ registro.total_parafusos }}</strong> parafusos</div>
+        <div class="metric">Confiança média<br><strong>{{ "%.2f"|format(registro.confianca_media) }}</strong></div>
+        <div class="metric">Funcionário<br><strong>{{ registro.funcionario_nome }}</strong></div>
+        <div class="metric">Data e hora<br>{{ registro.data_hora.strftime("%d/%m/%Y %H:%M:%S") }}</div>
+        <a class="button" href="/">Fazer nova contagem</a>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

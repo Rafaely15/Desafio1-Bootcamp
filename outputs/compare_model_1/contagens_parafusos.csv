@@ -1,0 +1,2 @@
+nome_da_imagem,total_detectado,confianca_media,data_hora,caminho_imagem_original,caminho_imagem_resultado,funcionario_id,funcionario_nome
+-2022-11-26-233904_png.rf.5a6dfb10717953e92a860abfa0ebac63.jpg,7,0.4921,2026-05-28T22:55:31,dataset_detect\images\test\-2022-11-26-233904_png.rf.5a6dfb10717953e92a860abfa0ebac63.jpg,outputs\compare_model_1\-2022-11-26-233904_png.rf.5a6dfb10717953e92a860abfa0ebac63_20260528_225531_913405.jpg,,

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard de contagens</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">Dashboard de contagens</div>
+      <nav class="nav">
+        <a class="button secondary" href="/">Nova contagem</a>
+        <a class="button secondary" href="/export/csv">Exportar CSV</a>
+        <a class="button secondary" href="/export/csv/today">CSV de hoje</a>
+      </nav>
+    </header>
+
+    <section class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Funcionário</th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Total</th>
+            <th>Confiança</th>
+            <th>Original</th>
+            <th>Processada</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in registros %}
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.funcionario_nome }}</td>
+            <td>{{ item.data_hora.strftime("%d/%m/%Y") }}</td>
+            <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
+            <td>{{ item.total_parafusos }}</td>
+            <td>{{ "%.2f"|format(item.confianca_media) }}</td>
+            <td><a href="{{ static_url_for_path(item.imagem_original) }}" target="_blank">abrir</a></td>
+            <td><a href="{{ static_url_for_path(item.imagem_processada) }}" target="_blank">abrir</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8">Nenhuma contagem registrada.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

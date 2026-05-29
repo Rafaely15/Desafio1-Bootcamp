@@ -1,0 +1,7 @@
+path: ../Screw.v4-dataset-screw4.yolov11
+train: train/images
+val: valid/images
+test: test/images
+
+names:
+  0: parafuso
