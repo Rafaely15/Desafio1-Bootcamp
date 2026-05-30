@@ -474,6 +474,20 @@ th {
   color: #fff;
 }
 
+.day-separator td {
+  background: #f1dfc3;
+  color: var(--navy-dark);
+  font-weight: 800;
+  border-top: 3px solid #c99566;
+  border-bottom: 2px solid #d7c7ad;
+}
+
+.day-separator span {
+  margin-left: 14px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
 .preview {
   display: none;
   margin-top: 12px;

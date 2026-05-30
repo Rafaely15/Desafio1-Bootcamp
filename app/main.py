@@ -115,8 +115,19 @@ def day_summary(records: list[Contagem]) -> dict[str, int]:
         "registros": total_records,
         "automatico": total_auto,
         "final": total_final,
-        "correções": corrections,
+        "correcoes": corrections,
     }
+
+
+def group_records_by_day(records: list[Contagem]) -> list[dict[str, object]]:
+    grouped: dict[date, list[Contagem]] = {}
+    for item in records:
+        if item.data_hora:
+            grouped.setdefault(item.data_hora.date(), []).append(item)
+    return [
+        {"date": day, "records": grouped[day], "summary": day_summary(grouped[day])}
+        for day in sorted(grouped.keys(), reverse=True)
+    ]
 
 
 def fechamento_rows(records: list[Contagem]) -> list[list[str]]:
@@ -456,6 +467,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
         "dashboard.html",
         {
             "registros": registros,
+            "grouped_records": group_records_by_day(registros),
             "static_url_for_path": static_url_for_path,
             "today_summary": day_summary(today_records),
             "finalizado": request.query_params.get("finalizado", ""),
@@ -490,10 +502,6 @@ def finalizar_dia(db: Session = Depends(get_db)):
     (output_dir / pdf_filename).write_bytes(
         build_pdf_report("Fechamento do dia - Contagem de Parafusos", records, summary)
     )
-
-    for item in records:
-        db.delete(item)
-    db.commit()
 
     return RedirectResponse(url=f"/dashboard?finalizado={csv_filename} e {pdf_filename}", status_code=303)
 

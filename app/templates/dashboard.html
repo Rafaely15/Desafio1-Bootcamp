@@ -42,22 +42,35 @@
           </tr>
         </thead>
         <tbody>
-          {% for item in registros %}
-          <tr>
-            <td>{{ item.id }}</td>
-            <td>{{ item.funcionario_nome }}</td>
-            <td>{{ item.funcionario_id or "-" }}</td>
-            <td>{{ item.setor or "-" }}</td>
-            <td>{{ item.pedido or "-" }}</td>
-            <td>{{ item.data_hora.strftime("%d/%m/%Y") }}</td>
-            <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
-            <td>{{ item.total_parafusos }}</td>
-            <td>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }}</td>
-            <td>{{ item.status or "confirmada" }}</td>
-            <td>{{ "%.2f"|format(item.confianca_media) }}</td>
-            <td><a href="{{ static_url_for_path(item.imagem_original) }}" target="_blank">abrir</a></td>
-            <td><a href="{{ static_url_for_path(item.imagem_processada) }}" target="_blank">abrir</a></td>
-          </tr>
+          {% for group in grouped_records %}
+            <tr class="day-separator">
+              <td colspan="13">
+                <strong>{{ group.date.strftime("%d/%m/%Y") }}</strong>
+                <span>
+                  Registros: {{ group.summary.registros }} |
+                  Automatica: {{ group.summary.automatico }} |
+                  Final: {{ group.summary.final }} |
+                  Correcoes: {{ group.summary.correcoes }}
+                </span>
+              </td>
+            </tr>
+            {% for item in group.records %}
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.funcionario_nome }}</td>
+              <td>{{ item.funcionario_id or "-" }}</td>
+              <td>{{ item.setor or "-" }}</td>
+              <td>{{ item.pedido or "-" }}</td>
+              <td>{{ item.data_hora.strftime("%d/%m/%Y") }}</td>
+              <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
+              <td>{{ item.total_parafusos }}</td>
+              <td>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }}</td>
+              <td>{{ item.status or "confirmada" }}</td>
+              <td>{{ "%.2f"|format(item.confianca_media) }}</td>
+              <td><a href="{{ static_url_for_path(item.imagem_original) }}" target="_blank">abrir</a></td>
+              <td><a href="{{ static_url_for_path(item.imagem_processada) }}" target="_blank">abrir</a></td>
+            </tr>
+            {% endfor %}
           {% else %}
           <tr><td colspan="13">Nenhuma contagem registrada.</td></tr>
           {% endfor %}
