@@ -1,0 +1,7 @@
+path: C:/Users/Carla Batista/Desktop/desafio-1/dataset_detect
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: parafuso
