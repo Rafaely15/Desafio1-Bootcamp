@@ -52,13 +52,13 @@ a {
 }
 
 .sidebar-section h2 {
-  color: #fff;
+  color: var(--navy-dark);
   font-size: 1rem;
   margin-bottom: 28px;
 }
 
 .sidebar-section.faint {
-  color: rgba(255, 255, 255, .86);
+  color: var(--navy-dark);
   font-weight: 800;
 }
 
