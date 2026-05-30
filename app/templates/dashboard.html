@@ -72,12 +72,12 @@
       <h2>Fechamento do dia</h2>
       <div class="metric-grid">
         <div class="metric">Registros<strong>{{ today_summary.registros }}</strong></div>
-        <div class="metric">Automatico<strong>{{ today_summary.automatico }}</strong></div>
+        <div class="metric">Automática<strong>{{ today_summary.automatico }}</strong></div>
         <div class="metric">Final<strong>{{ today_summary.final }}</strong></div>
-        <div class="metric">Correcoes<strong>{{ today_summary.correcoes }}</strong></div>
+        <div class="metric">Correções<strong>{{ today_summary.correcoes }}</strong></div>
       </div>
       <form action="/finalizar-dia" method="post">
-        <button type="submit">Registrar finalizacao do dia</button>
+        <button type="submit">Registrar finalização do dia</button>
       </form>
       <div class="nav day-close-actions">
         <a class="button secondary" href="/export/csv/today">Baixar CSV antes de finalizar</a>
