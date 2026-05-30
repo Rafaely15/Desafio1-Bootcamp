@@ -8,17 +8,17 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="sidebar-section faint">Area tecnica / supervisor</div>
+    <div class="sidebar-section faint">Área técnica</div>
 
     <div class="sidebar-section">
-      <h2>Identificacao do funcionario</h2>
+      <h2>Identificação do funcionário</h2>
       {% if employee %}
         <div class="employee-badge">
           <strong>{{ employee.nome }}</strong>
           <span>{{ employee.id }}{% if employee.setor %} - {{ employee.setor }}{% endif %}</span>
         </div>
         <form action="/logout" method="post">
-          <button class="button secondary full" type="submit">Sair / trocar funcionario</button>
+          <button class="button secondary full" type="submit">Sair / trocar funcionário</button>
         </form>
       {% else %}
         <form action="/login" method="post">
@@ -37,9 +37,9 @@
     </div>
 
     <details class="sidebar-section">
-      <summary>Area tecnica / supervisor</summary>
+      <summary>Área técnica / supervisor</summary>
       <p class="small-muted">Modelo ativo: yolo11_screws-2</p>
-      <p class="small-muted">Confianca: {{ "%.2f"|format(conf) }}</p>
+      <p class="small-muted">Confiança: {{ "%.2f"|format(conf) }}</p>
       <a href="/dashboard">Dashboard geral</a><br>
       <a href="/export/csv/today">CSV do dia</a>
     </details>
@@ -66,9 +66,9 @@
           <img src="/static/assets/capture_guide.png" alt="Guia de captura">
         </div>
         <div class="guide-labels">
-          <div>Mantenha a camera nivelada</div>
-          <div>Boa iluminacao</div>
-          <div>Distancia ideal</div>
+          <div>Mantenha a câmera nivelada</div>
+          <div>Boa iluminação</div>
+          <div>Distância ideal</div>
         </div>
       </section>
 
@@ -80,24 +80,24 @@
         <section class="panel capture-panel">
           <div class="quality-ok">
             Funcionario ativo: <strong>{{ employee.nome }} - {{ employee.id }}</strong>.
-            As proximas contagens serao registradas automaticamente neste usuario.
+            As próximas contagens serão registradas automaticamente neste usuário.
           </div>
 
           <form action="/predict" method="post" enctype="multipart/form-data">
             <div class="form-grid">
               <div>
-                <label for="pedido">Numero do pedido ou lote (opcional)</label>
+                <label for="pedido">Número do pedido ou lote (opcional)</label>
                 <input id="pedido" name="pedido" type="text" autocomplete="off">
               </div>
               <div>
-                <label for="observacao">Observacoes (opcional)</label>
+                <label for="observacao">Observações (opcional)</label>
                 <input id="observacao" name="observacao" type="text" autocomplete="off">
               </div>
             </div>
 
             <div class="camera-box">
               <label for="imagem">Tirar foto dos parafusos</label>
-              <p class="small-muted">No celular, toque aqui para abrir a camera. No computador, escolha uma imagem.</p>
+              <p class="small-muted">No celular, toque aqui para abrir a câmera. No computador, escolha uma imagem.</p>
               <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
               <img id="preview" class="preview" alt="Previa da imagem selecionada">
             </div>
@@ -118,9 +118,9 @@
             <table>
               <thead>
                 <tr>
-                  <th>Horario</th>
+                  <th>Horário</th>
                   <th>Pedido/lote</th>
-                  <th>Automatica</th>
+                  <th>Automática</th>
                   <th>Final</th>
                   <th>Status</th>
                 </tr>

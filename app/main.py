@@ -95,7 +95,7 @@ def employee_summary(records: list[Contagem]) -> dict[str, int]:
         for item in records
     )
     corrections = sum(1 for item in records if item.status == "corrigida")
-    return {"registros": total_records, "parafusos": total_screws, "correcoes": corrections}
+    return {"registros": total_records, "parafusos": total_screws, "correções": corrections}
 
 
 def records_for_date(db: Session, target_date: date) -> list[Contagem]:
@@ -115,7 +115,7 @@ def day_summary(records: list[Contagem]) -> dict[str, int]:
         "registros": total_records,
         "automatico": total_auto,
         "final": total_final,
-        "correcoes": corrections,
+        "correções": corrections,
     }
 
 
