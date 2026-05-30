@@ -214,8 +214,7 @@ def build_pdf_report(title: str, records: list[Contagem], summary: dict[str, int
         ("Hora", 100),
         ("Auto", 70),
         ("Final", 70),
-        ("Status", 115),
-        ("Conf.", 80),
+        ("Status", 195),
     ]
     table_x = margin
     table_w = sum(width for _, width in table_columns)
@@ -235,7 +234,6 @@ def build_pdf_report(title: str, records: list[Contagem], summary: dict[str, int
             str(item.total_parafusos),
             str(final),
             item.status or "confirmada",
-            f"{item.confianca_media:.2f}",
         ])
 
     def truncate(draw: ImageDraw.ImageDraw, value: str, max_w: int, fnt: ImageFont.ImageFont) -> str:
