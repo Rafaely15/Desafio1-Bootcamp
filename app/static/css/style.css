@@ -275,6 +275,23 @@ input[type="file"] {
   padding: 18px;
 }
 
+.camera-box {
+  margin: 16px 0;
+  padding: 16px;
+  border: 2px dashed #b98555;
+  border-radius: 14px;
+  background: #fff9ee;
+}
+
+.camera-box label {
+  margin-top: 0;
+  font-size: 1.08rem;
+}
+
+.camera-box input[type="file"] {
+  margin-top: 10px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -285,6 +302,10 @@ input[type="file"] {
 .history-panel {
   max-width: 860px;
   margin: 0 auto 22px;
+}
+
+.day-close-panel {
+  margin-top: 18px;
 }
 
 .notice-panel {

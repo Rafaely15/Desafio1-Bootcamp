@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import shutil
 import socket
 from datetime import date, datetime
@@ -95,6 +96,27 @@ def employee_summary(records: list[Contagem]) -> dict[str, int]:
     )
     corrections = sum(1 for item in records if item.status == "corrigida")
     return {"registros": total_records, "parafusos": total_screws, "correcoes": corrections}
+
+
+def records_for_date(db: Session, target_date: date) -> list[Contagem]:
+    records = db.query(Contagem).order_by(Contagem.data_hora.asc()).all()
+    return [item for item in records if item.data_hora and item.data_hora.date() == target_date]
+
+
+def day_summary(records: list[Contagem]) -> dict[str, int]:
+    total_records = len(records)
+    total_auto = sum(int(item.total_parafusos) for item in records)
+    total_final = sum(
+        int(item.total_corrigido if item.total_corrigido is not None else item.total_parafusos)
+        for item in records
+    )
+    corrections = sum(1 for item in records if item.status == "corrigida")
+    return {
+        "registros": total_records,
+        "automatico": total_auto,
+        "final": total_final,
+        "correcoes": corrections,
+    }
 
 
 @app.get("/health")
@@ -232,11 +254,36 @@ def correct_record(
 @app.get("/dashboard")
 def dashboard(request: Request, db: Session = Depends(get_db)):
     registros = db.query(Contagem).order_by(Contagem.data_hora.desc()).limit(500).all()
+    today_records = records_for_date(db, date.today())
     return templates.TemplateResponse(
         request,
         "dashboard.html",
-        {"registros": registros, "static_url_for_path": static_url_for_path},
+        {
+            "registros": registros,
+            "static_url_for_path": static_url_for_path,
+            "today_summary": day_summary(today_records),
+            "finalizado": request.query_params.get("finalizado", ""),
+        },
     )
+
+
+@app.post("/finalizar-dia")
+def finalizar_dia(db: Session = Depends(get_db)):
+    target_date = date.today()
+    records = records_for_date(db, target_date)
+    summary = day_summary(records)
+    output_dir = config.BASE_DIR / "outputs" / "fechamentos"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"fechamento_{target_date.isoformat()}_{datetime.now():%H%M%S}.json"
+    payload = {
+        "empresa": "Metal Mecânica",
+        "data": target_date.isoformat(),
+        "registrado_em": datetime.now().isoformat(timespec="seconds"),
+        "resumo": summary,
+        "registros": [item.id for item in records],
+    }
+    (output_dir / filename).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return RedirectResponse(url=f"/dashboard?finalizado={filename}", status_code=303)
 
 
 def csv_response(registros: list[Contagem], filename: str) -> StreamingResponse:

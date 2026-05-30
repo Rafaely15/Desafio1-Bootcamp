@@ -95,9 +95,12 @@
               </div>
             </div>
 
-            <label for="imagem">Arraste a imagem ou procure arquivos</label>
-            <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
-            <img id="preview" class="preview" alt="Previa da imagem selecionada">
+            <div class="camera-box">
+              <label for="imagem">Tirar foto dos parafusos</label>
+              <p class="small-muted">No celular, toque aqui para abrir a camera. No computador, escolha uma imagem.</p>
+              <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
+              <img id="preview" class="preview" alt="Previa da imagem selecionada">
+            </div>
 
             <button class="full" type="submit">Contar parafusos</button>
           </form>
