@@ -119,6 +119,204 @@ def day_summary(records: list[Contagem]) -> dict[str, int]:
     }
 
 
+def fechamento_rows(records: list[Contagem]) -> list[list[str]]:
+    rows = [[
+        "id",
+        "funcionario_nome",
+        "funcionario_id",
+        "setor",
+        "pedido",
+        "data_hora",
+        "total_parafusos",
+        "total_corrigido",
+        "confianca_media",
+        "status",
+        "imagem_original",
+        "imagem_processada",
+        "observacao",
+    ]]
+    for item in records:
+        rows.append([
+            str(item.id),
+            item.funcionario_nome,
+            item.funcionario_id or "",
+            item.setor or "",
+            item.pedido or "",
+            item.data_hora.isoformat(sep=" ", timespec="seconds") if item.data_hora else "",
+            str(item.total_parafusos),
+            str(item.total_corrigido if item.total_corrigido is not None else item.total_parafusos),
+            f"{item.confianca_media:.4f}",
+            item.status or "",
+            item.imagem_original,
+            item.imagem_processada,
+            item.observacao or "",
+        ])
+    return rows
+
+
+def _pdf_escape(text: object) -> str:
+    value = str(text).encode("latin-1", errors="replace").decode("latin-1")
+    return value.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+
+def _wrap_text(text: str, width: int = 95) -> list[str]:
+    words = text.split()
+    lines: list[str] = []
+    current = ""
+    for word in words:
+        next_line = f"{current} {word}".strip()
+        if len(next_line) > width and current:
+            lines.append(current)
+            current = word
+        else:
+            current = next_line
+    if current:
+        lines.append(current)
+    return lines or [""]
+
+
+def build_pdf_report(title: str, records: list[Contagem], summary: dict[str, int]) -> bytes:
+    import io
+
+    from PIL import Image, ImageDraw, ImageFont
+
+    page_w, page_h = 1240, 1754
+    margin = 72
+    navy = "#173c56"
+    blue = "#1f5f8f"
+    copper = "#c99566"
+    paper = "#fffdf7"
+    line = "#e4d4bd"
+    text = "#102333"
+    muted = "#6d5744"
+
+    def font(name: str, size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+        path = Path("C:/Windows/Fonts") / name
+        try:
+            return ImageFont.truetype(str(path), size)
+        except OSError:
+            return ImageFont.load_default()
+
+    title_font = font("arialbd.ttf", 42)
+    subtitle_font = font("arial.ttf", 22)
+    h_font = font("arialbd.ttf", 24)
+    body_font = font("arial.ttf", 20)
+    small_font = font("arial.ttf", 18)
+    table_font = font("arial.ttf", 17)
+    table_bold = font("arialbd.ttf", 17)
+
+    table_columns = [
+        ("ID", 55),
+        ("Funcionario", 220),
+        ("Matricula", 120),
+        ("Setor", 130),
+        ("Pedido", 105),
+        ("Hora", 100),
+        ("Auto", 70),
+        ("Final", 70),
+        ("Status", 115),
+        ("Conf.", 80),
+    ]
+    table_x = margin
+    table_w = sum(width for _, width in table_columns)
+    row_h = 38
+    first_page_rows = 24
+    other_page_rows = 32
+    data = []
+    for item in records:
+        final = item.total_corrigido if item.total_corrigido is not None else item.total_parafusos
+        data.append([
+            str(item.id),
+            item.funcionario_nome,
+            item.funcionario_id or "-",
+            item.setor or "-",
+            item.pedido or "-",
+            item.data_hora.strftime("%H:%M:%S") if item.data_hora else "-",
+            str(item.total_parafusos),
+            str(final),
+            item.status or "confirmada",
+            f"{item.confianca_media:.2f}",
+        ])
+
+    def truncate(draw: ImageDraw.ImageDraw, value: str, max_w: int, fnt: ImageFont.ImageFont) -> str:
+        value = str(value)
+        if draw.textlength(value, font=fnt) <= max_w:
+            return value
+        while value and draw.textlength(value + "...", font=fnt) > max_w:
+            value = value[:-1]
+        return value + "..."
+
+    def draw_header(draw: ImageDraw.ImageDraw, page_no: int) -> int:
+        draw.rounded_rectangle([0, 0, page_w, 150], radius=0, fill=navy)
+        draw.text((margin, 36), "Metal Mecânica", fill="white", font=title_font)
+        draw.text((margin, 91), title, fill="#dceaf3", font=subtitle_font)
+        draw.text((page_w - 210, 48), f"Pagina {page_no}", fill="#dceaf3", font=small_font)
+        return 190
+
+    def draw_summary(draw: ImageDraw.ImageDraw, y: int) -> int:
+        draw.text((margin, y), f"Data: {date.today().strftime('%d/%m/%Y')}", fill=text, font=h_font)
+        y += 48
+        cards = [
+            ("Registros", summary["registros"]),
+            ("Automático", summary["automatico"]),
+            ("Final", summary["final"]),
+            ("Correções", summary["correcoes"]),
+        ]
+        card_w = (table_w - 36) // 4
+        for idx, (label, value) in enumerate(cards):
+            x = margin + idx * (card_w + 12)
+            draw.rounded_rectangle([x, y, x + card_w, y + 112], radius=16, fill=paper, outline=line, width=2)
+            draw.text((x + 22, y + 18), label, fill=muted, font=small_font)
+            draw.text((x + 22, y + 48), str(value), fill=blue, font=font("arialbd.ttf", 38))
+        return y + 154
+
+    def draw_table(draw: ImageDraw.ImageDraw, y: int, rows: list[list[str]]) -> int:
+        draw.rounded_rectangle([table_x, y, table_x + table_w, y + row_h], radius=8, fill=navy)
+        x = table_x
+        for label, width in table_columns:
+            draw.text((x + 8, y + 10), label, fill="white", font=table_bold)
+            x += width
+        y += row_h
+
+        if not rows:
+            draw.rectangle([table_x, y, table_x + table_w, y + row_h], fill=paper, outline=line)
+            draw.text((table_x + 12, y + 10), "Nenhum registro encontrado.", fill=text, font=table_font)
+            return y + row_h
+
+        for idx, row in enumerate(rows):
+            fill = "#ffffff" if idx % 2 == 0 else "#f7efe3"
+            draw.rectangle([table_x, y, table_x + table_w, y + row_h], fill=fill, outline=line)
+            x = table_x
+            for value, (_, width) in zip(row, table_columns):
+                draw.text((x + 8, y + 10), truncate(draw, value, width - 16, table_font), fill=text, font=table_font)
+                x += width
+            y += row_h
+        return y
+
+    pages: list[Image.Image] = []
+    remaining = data[:]
+    page_no = 1
+    while remaining or not pages:
+        image = Image.new("RGB", (page_w, page_h), "white")
+        draw = ImageDraw.Draw(image)
+        y = draw_header(draw, page_no)
+        rows_per_page = other_page_rows
+        if page_no == 1:
+            y = draw_summary(draw, y)
+            rows_per_page = first_page_rows
+        rows = remaining[:rows_per_page]
+        remaining = remaining[rows_per_page:]
+        draw_table(draw, y, rows)
+        draw.line([margin, page_h - 58, page_w - margin, page_h - 58], fill=line, width=2)
+        draw.text((margin, page_h - 42), "Relatório gerado automaticamente pelo Sistema de Contagem de Parafusos.", fill=muted, font=small_font)
+        pages.append(image)
+        page_no += 1
+
+    buffer = io.BytesIO()
+    pages[0].save(buffer, format="PDF", save_all=True, append_images=pages[1:], resolution=150.0)
+    return buffer.getvalue()
+
+
 @app.get("/health")
 def health() -> dict[str, object]:
     return {
@@ -277,6 +475,7 @@ def finalizar_dia(db: Session = Depends(get_db)):
     stamp = datetime.now().strftime("%H%M%S")
     filename = f"fechamento_{target_date.isoformat()}_{stamp}.json"
     csv_filename = f"fechamento_{target_date.isoformat()}_{stamp}.csv"
+    pdf_filename = f"fechamento_{target_date.isoformat()}_{stamp}.pdf"
     payload = {
         "empresa": "Metal Mecânica",
         "data": target_date.isoformat(),
@@ -288,43 +487,17 @@ def finalizar_dia(db: Session = Depends(get_db)):
 
     with (output_dir / csv_filename).open("w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow([
-            "id",
-            "funcionario_nome",
-            "funcionario_id",
-            "setor",
-            "pedido",
-            "data_hora",
-            "total_parafusos",
-            "total_corrigido",
-            "confianca_media",
-            "status",
-            "imagem_original",
-            "imagem_processada",
-            "observacao",
-        ])
-        for item in records:
-            writer.writerow([
-                item.id,
-                item.funcionario_nome,
-                item.funcionario_id or "",
-                item.setor or "",
-                item.pedido or "",
-                item.data_hora.isoformat(sep=" ", timespec="seconds") if item.data_hora else "",
-                item.total_parafusos,
-                item.total_corrigido if item.total_corrigido is not None else item.total_parafusos,
-                f"{item.confianca_media:.4f}",
-                item.status or "",
-                item.imagem_original,
-                item.imagem_processada,
-                item.observacao or "",
-            ])
+        writer.writerows(fechamento_rows(records))
+
+    (output_dir / pdf_filename).write_bytes(
+        build_pdf_report("Fechamento do dia - Contagem de Parafusos", records, summary)
+    )
 
     for item in records:
         db.delete(item)
     db.commit()
 
-    return RedirectResponse(url=f"/dashboard?finalizado={csv_filename}", status_code=303)
+    return RedirectResponse(url=f"/dashboard?finalizado={csv_filename} e {pdf_filename}", status_code=303)
 
 
 def csv_response(registros: list[Contagem], filename: str) -> StreamingResponse:
@@ -390,6 +563,19 @@ def export_csv_today(db: Session = Depends(get_db)):
     registros = db.query(Contagem).order_by(Contagem.data_hora.asc()).all()
     registros = [r for r in registros if r.data_hora and r.data_hora.date() == today]
     return csv_response(registros, f"contagens_parafusos_{today.isoformat()}.csv")
+
+
+@app.get("/export/pdf/today")
+def export_pdf_today(db: Session = Depends(get_db)):
+    today = date.today()
+    registros = records_for_date(db, today)
+    pdf = build_pdf_report("Relatorio do dia - Contagem de Parafusos", registros, day_summary(registros))
+    filename = f"contagens_parafusos_{today.isoformat()}.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.get("/uploads/{filename}")

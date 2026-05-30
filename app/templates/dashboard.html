@@ -19,6 +19,7 @@
       <a class="button secondary" href="/">Nova contagem</a>
       <a class="button secondary" href="/export/csv">Exportar CSV geral</a>
       <a class="button secondary" href="/export/csv/today">CSV do dia</a>
+      <a class="button secondary" href="/export/pdf/today">PDF do dia</a>
     </nav>
 
     <section class="table-wrap">
@@ -78,6 +79,10 @@
       <form action="/finalizar-dia" method="post">
         <button type="submit">Registrar finalizacao do dia</button>
       </form>
+      <div class="nav day-close-actions">
+        <a class="button secondary" href="/export/csv/today">Baixar CSV antes de finalizar</a>
+        <a class="button secondary" href="/export/pdf/today">Baixar PDF antes de finalizar</a>
+      </div>
     </section>
   </main>
 </body>

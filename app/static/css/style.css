@@ -308,6 +308,10 @@ input[type="file"] {
   margin-top: 18px;
 }
 
+.day-close-actions {
+  margin: 12px 0 0;
+}
+
 .notice-panel {
   max-width: 860px;
   margin: 0 auto;
