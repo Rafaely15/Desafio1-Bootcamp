@@ -274,7 +274,9 @@ def finalizar_dia(db: Session = Depends(get_db)):
     summary = day_summary(records)
     output_dir = config.BASE_DIR / "outputs" / "fechamentos"
     output_dir.mkdir(parents=True, exist_ok=True)
-    filename = f"fechamento_{target_date.isoformat()}_{datetime.now():%H%M%S}.json"
+    stamp = datetime.now().strftime("%H%M%S")
+    filename = f"fechamento_{target_date.isoformat()}_{stamp}.json"
+    csv_filename = f"fechamento_{target_date.isoformat()}_{stamp}.csv"
     payload = {
         "empresa": "Metal Mecânica",
         "data": target_date.isoformat(),
@@ -283,7 +285,46 @@ def finalizar_dia(db: Session = Depends(get_db)):
         "registros": [item.id for item in records],
     }
     (output_dir / filename).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    return RedirectResponse(url=f"/dashboard?finalizado={filename}", status_code=303)
+
+    with (output_dir / csv_filename).open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow([
+            "id",
+            "funcionario_nome",
+            "funcionario_id",
+            "setor",
+            "pedido",
+            "data_hora",
+            "total_parafusos",
+            "total_corrigido",
+            "confianca_media",
+            "status",
+            "imagem_original",
+            "imagem_processada",
+            "observacao",
+        ])
+        for item in records:
+            writer.writerow([
+                item.id,
+                item.funcionario_nome,
+                item.funcionario_id or "",
+                item.setor or "",
+                item.pedido or "",
+                item.data_hora.isoformat(sep=" ", timespec="seconds") if item.data_hora else "",
+                item.total_parafusos,
+                item.total_corrigido if item.total_corrigido is not None else item.total_parafusos,
+                f"{item.confianca_media:.4f}",
+                item.status or "",
+                item.imagem_original,
+                item.imagem_processada,
+                item.observacao or "",
+            ])
+
+    for item in records:
+        db.delete(item)
+    db.commit()
+
+    return RedirectResponse(url=f"/dashboard?finalizado={csv_filename}", status_code=303)
 
 
 def csv_response(registros: list[Contagem], filename: str) -> StreamingResponse:
