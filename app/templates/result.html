@@ -34,9 +34,9 @@
           <span>parafusos</span>
         </div>
 
-        <div class="metric">Confianca media<strong>{{ "%.2f"|format(registro.confianca_media) }}</strong></div>
-        <div class="metric">Funcionario<strong>{{ registro.funcionario_nome }}</strong></div>
-        {% if registro.funcionario_id %}<div class="metric">Matricula/ID<strong>{{ registro.funcionario_id }}</strong></div>{% endif %}
+        <div class="metric">Confiança media<strong>{{ "%.2f"|format(registro.confianca_media) }}</strong></div>
+        <div class="metric">Funcionário<strong>{{ registro.funcionario_nome }}</strong></div>
+        {% if registro.funcionario_id %}<div class="metric">Matrícula/ID<strong>{{ registro.funcionario_id }}</strong></div>{% endif %}
         {% if registro.pedido %}<div class="metric">Pedido/lote<strong>{{ registro.pedido }}</strong></div>{% endif %}
         <div class="metric">Data e hora<strong>{{ registro.data_hora.strftime("%d/%m/%Y %H:%M:%S") }}</strong></div>
 
@@ -44,9 +44,9 @@
           <h3>A contagem esta correta?</h3>
           <label for="total_corrigido">Contagem final</label>
           <input id="total_corrigido" name="total_corrigido" type="number" min="0" value="{{ registro.total_parafusos }}" required>
-          <label for="observacao">Observacao da conferencia</label>
+          <label for="observacao">Observação da conferência</label>
           <textarea id="observacao" name="observacao">{{ registro.observacao or "" }}</textarea>
-          <button type="submit">Salvar confirmacao/correcao</button>
+          <button type="submit">Salvar confirmacao/correção</button>
         </form>
       </aside>
     </section>
