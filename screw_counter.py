@@ -28,6 +28,7 @@ def contar_parafusos(
     funcionario_nome: str | None = None,
     iou: float = 0.45,
     imgsz: int | None = None,
+    max_box_area_ratio: float = 0.18,
     csv_path: str | Path | None = None,
 ) -> dict[str, Any]:
     image_path = Path(image_path)
@@ -57,15 +58,25 @@ def contar_parafusos(
     result = results[0]
 
     boxes = result.boxes
-    total = 0 if boxes is None else len(boxes)
     confidences = []
 
     annotated = image.copy()
-    if boxes is not None and total > 0:
+    detections: list[tuple[np.ndarray, float]] = []
+    if boxes is not None and len(boxes) > 0:
         xyxy = boxes.xyxy.cpu().numpy()
         confs = boxes.conf.cpu().numpy()
-        confidences = [float(value) for value in confs]
+        image_area = float(image.shape[0] * image.shape[1])
         for box, score in zip(xyxy, confs):
+            x1, y1, x2, y2 = [float(v) for v in box]
+            box_area_ratio = max(0.0, (x2 - x1) * (y2 - y1)) / image_area
+            if box_area_ratio > max_box_area_ratio:
+                continue
+            detections.append((box, float(score)))
+
+    total = len(detections)
+    if detections:
+        confidences = [score for _, score in detections]
+        for box, score in detections:
             x1, y1, x2, y2 = [int(v) for v in box]
             cv2.rectangle(annotated, (x1, y1), (x2, y2), (20, 130, 255), 2)
             cv2.putText(
