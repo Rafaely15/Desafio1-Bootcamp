@@ -365,6 +365,28 @@ de overhead. Com o \texttt{\_MODEL\_CACHE}, o modelo \'e carregado uma \'unica v
 reutilizado em todas as requisi\c{c}\~oes subsequentes, reduzindo o tempo de resposta
 para a ordem de milissegundos.
 
+\subsection{Filtro de \'area: removendo falsos positivos grandes}
+
+Um problema observado durante os testes foi a detec\c{c}\~ao ocasional de
+\emph{bounding boxes} grandes demais para serem parafusos (por exemplo, sombras,
+reflexos ou agrupamentos interpretados como um \'unico objeto). Para mitigar isso sem
+recolher dados ou retreinar, foi adicionado um filtro geom\'etrico simples: qualquer
+caixa cuja \'area ultrapasse \texttt{max\_box\_area\_ratio} (18\,\% da \'area total da
+imagem) \'e descartada antes da contagem.
+
+\begin{lstlisting}[caption={Filtro de \'area por raz\~ao (\texttt{screw\_counter.py})}]
+image_area = float(image.shape[0] * image.shape[1])
+for box, score in zip(xyxy, confs):
+    x1, y1, x2, y2 = [float(v) for v in box]
+    box_area_ratio = max(0.0, (x2 - x1) * (y2 - y1)) / image_area
+    if box_area_ratio > max_box_area_ratio:   # 0.18 por padrao
+        continue                               # descarta deteccao grande demais
+    detections.append((box, float(score)))
+\end{lstlisting}
+
+Essa heur\'istica de baixo custo computacional, combinada com o limiar de confian\c{c}a
+conservador, melhorou a estabilidade da contagem em fotos reais tiradas pelos operadores.
+
 %% ============================================================
 \section{Treinamento do Modelo}
 
@@ -519,10 +541,12 @@ FastAPI foi escolhido por oferecer:
     POST & \texttt{/login}           & Autentica\c{c}\~ao por cookie \\
     POST & \texttt{/logout}          & Encerramento de sess\~ao \\
     POST & \texttt{/predict}         & Infer\^encia e registro \\
-    GET  & \texttt{/dashboard}       & Hist\'orico de contagens \\
+    GET  & \texttt{/dashboard}       & Hist\'orico agrupado por dia \\
     POST & \texttt{/record/\{id\}/correct} & Corre\c{c}\~ao manual \\
+    POST & \texttt{/finalizar-dia}   & Fechamento do dia (JSON+CSV+PDF) \\
     GET  & \texttt{/export/csv}      & Exporta\c{c}\~ao completa CSV \\
-    GET  & \texttt{/export/csv/today}& Exporta\c{c}\~ao do dia \\
+    GET  & \texttt{/export/csv/today}& Exporta\c{c}\~ao do dia (CSV) \\
+    GET  & \texttt{/export/pdf/today}& Relat\'orio do dia (PDF) \\
     GET  & \texttt{/health}          & Status do sistema \\
     \bottomrule
   \end{tabular}
@@ -574,6 +598,81 @@ def predict(
     return templates.TemplateResponse(request, "result.html", {...})
 \end{lstlisting}
 
+\subsection{Fechamento do dia e relat\'orios gerenciais}
+
+Para apoiar a rotina operacional do setor de \emph{picking}, o \emph{dashboard} agrupa as
+contagens por dia (\texttt{group\_records\_by\_day}) e calcula, para cada data, um resumo
+com quatro indicadores (\texttt{day\_summary}):
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Registros}: quantidade de fotos processadas no dia;
+  \item \textbf{Autom\'atica}: soma das contagens feitas pelo modelo;
+  \item \textbf{Final}: soma das contagens ap\'os eventuais corre\c{c}\~oes manuais;
+  \item \textbf{Corre\c{c}\~oes}: quantos registros foram ajustados pelo operador.
+\end{itemize}
+
+A rota \texttt{POST /finalizar-dia} consolida o dia gerando tr\^es artefatos simult\^aneos
+em \texttt{outputs/fechamentos/}: um \texttt{JSON} (resumo program\'avel), um \texttt{CSV}
+(planilha audit\'avel) e um \texttt{PDF} (relat\'orio impresso). O PDF \'e desenhado
+diretamente com a biblioteca \texttt{Pillow} (\texttt{build\_pdf\_report}), sem depender de
+motores externos de renderiza\c{c}\~ao, mantendo o sistema leve e autocontido.
+
+%% ============================================================
+\section{Interface do Sistema em Uso}
+\label{sec:interface}
+
+Esta se\c{c}\~ao apresenta capturas de tela reais do sistema em opera\c{c}\~ao, acessado a
+partir de um smartphone Android atrav\'es do navegador (via t\'unel Cloudflare). As imagens
+ilustram o fluxo completo do operador, do \emph{login} ao resultado da contagem.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\linewidth]{images/tela_login.jpeg}
+    \caption{Tela de \emph{login}: nome, matr\'icula e setor, al\'em do guia de
+      ``formato ideal'' da foto.}
+    \label{fig:login}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\linewidth]{images/tela_envio.jpeg}
+    \caption{Tela de envio: funcion\'ario ativo, campos opcionais de pedido/observa\c{c}\~ao
+      e bot\~ao para tirar a foto.}
+    \label{fig:envio}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\textwidth}
+    \includegraphics[width=\linewidth]{images/tela_resultado.jpeg}
+    \caption{Resultado: imagem anotada com \emph{bounding boxes}, contagem estimada (6) e
+      confian\c{c}a m\'edia (0{,}91).}
+    \label{fig:resultado}
+  \end{subfigure}
+  \caption{Fluxo do operador: \emph{login}, envio da foto e resultado da contagem.}
+  \label{fig:fluxo}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.40\textwidth}
+    \includegraphics[width=\linewidth]{images/tela_dashboard.jpeg}
+    \caption{\emph{Dashboard}: hist\'orico de contagens agrupado por dia, com resumo por
+      data e exporta\c{c}\~ao em CSV/PDF.}
+    \label{fig:dashboard}
+  \end{subfigure}\hspace{0.04\textwidth}
+  \begin{subfigure}[t]{0.40\textwidth}
+    \includegraphics[width=\linewidth]{images/tela_fechamento.jpeg}
+    \caption{Fechamento do dia: indicadores (registros, autom\'atica, final, corre\c{c}\~oes)
+      e bot\~oes de exporta\c{c}\~ao.}
+    \label{fig:fechamento}
+  \end{subfigure}
+  \caption{\'Area gerencial: hist\'orico e fechamento do dia.}
+  \label{fig:gerencial}
+\end{figure}
+
+Na Figura~\ref{fig:resultado}, observa-se que o sistema detectou corretamente os seis
+parafusos da cena, com confian\c{c}a m\'edia de 0{,}91, exibindo a mensagem
+``\emph{Foto processada. Revise a imagem antes de considerar a contagem final.}'' --
+refor\c{c}ando que o modelo \'e um apoio \`a decis\~ao e n\~ao um substituto cego do
+operador.
+
 %% ============================================================
 \section{Banco de Dados}
 
@@ -624,9 +723,11 @@ Todas as constantes cr\'iticas est\~ao em \texttt{app/config.py}:
 BASE_DIR = Path(__file__).resolve().parents[1]
 
 MODEL_PATH     = BASE_DIR / "runs_screws" / "yolo11_screws-2" / "weights" / "best.pt"
-CONF_THRESHOLD = 0.25   # reduzir se perder parafusos
+CONF_THRESHOLD = 0.10   # limiar padrao (sensivel: prioriza recall)
 IOU_THRESHOLD  = 0.45   # ajustar se houver deteccoes duplicadas
-DEFAULT_IMGSZ  = 1280
+DEFAULT_IMGSZ  = 1280   # resolucao de inferencia (parafusos pequenos)
+DENSE_CONF_THRESHOLD = 0.25  # cenarios com muitos parafusos
+DENSE_IMGSZ          = 1280
 
 UPLOAD_DIR  = BASE_DIR / "app" / "static" / "uploads"
 RESULTS_DIR = BASE_DIR / "app" / "static" / "results"
@@ -635,6 +736,11 @@ DATABASE_URL = f"sqlite:///{BASE_DIR / 'contagens.db'}"
 
 Centralizar configura\c{c}\~oes evita ``n\'umeros m\'agicos'' espalhados pelo c\'odigo e
 facilita ajuste fino da sensibilidade do modelo sem alterar a l\'ogica de neg\'ocio.
+O limiar de confian\c{c}a padr\~ao foi fixado em \texttt{0.10}, valor deliberadamente
+baixo que prioriza o \emph{recall} (n\~ao perder parafusos reais); a infer\^encia roda a
+\texttt{imgsz=1280} porque parafusos s\~ao objetos pequenos que se beneficiam de maior
+resolu\c{c}\~ao. Os par\^ametros \texttt{DENSE\_*} ficam reservados para cen\'arios com
+grande densidade de pe\c{c}as, onde um limiar mais alto reduz falsos positivos.
 
 %% ============================================================
 \section{Portabilidade para Dispositivos M\'oveis}
@@ -654,6 +760,14 @@ smartphones da empresa. Duas estrat\'egias foram implementadas:
     \texttt{export\_coreml.py} (iOS) convertem o modelo treinado para formatos otimizados
     com quantiza\c{c}\~ao INT8, reduzindo o tamanho do modelo e o consumo de mem\'oria
     para execu\c{c}\~ao diretamente no SoC do smartphone.
+
+  \item[Estrat\'egia 3 -- T\'unel HTTPS via Cloudflare:] Para testes com smartphones fora
+    da rede local da empresa, foi utilizado o \texttt{cloudflared} (Cloudflare Tunnel),
+    que exp\~oe o servidor local em um endere\c{c}o p\'ublico \texttt{*.trycloudflare.com}
+    com HTTPS, sem necessidade de abrir portas no \emph{firewall} nem configurar IP fixo.
+    Foi exatamente esse o m\'etodo empregado para capturar as telas reais apresentadas na
+    Se\c{c}\~ao~\ref{sec:interface} (note o dom\'inio \texttt{trycloudflare.com} na barra
+    de endere\c{c}o do navegador do celular).
 \end{description}
 
 %% ============================================================
@@ -749,6 +863,66 @@ Acesso no smartphone (mesma rede Wi-Fi):
 \begin{verbatim}
 http://<IP_DO_SERVIDOR>:8000
 \end{verbatim}
+
+%% ============================================================
+\section{Experi\^encia de Uso da Ferramenta}
+
+Esta se\c{c}\~ao relata a experi\^encia pr\'atica de utilizar o sistema em um cen\'ario
+pr\'oximo ao real, do ponto de vista do operador de \emph{picking}.
+
+\subsection{Primeiro contato e \emph{onboarding}}
+
+O acesso \'e imediato: o operador abre o link no navegador do pr\'oprio celular -- sem
+instalar aplicativo -- e \'e recebido por uma tela de \emph{login} curta
+(Figura~\ref{fig:login}). N\~ao h\'a senha; bastam nome e matr\'icula, o que reduz a
+fric\c{c}\~ao em um ambiente de ch\~ao de f\'abrica, onde digitar credenciais complexas em
+telas pequenas seria um obst\'aculo. O cart\~ao ``Formato ideal'', com uma imagem-guia e as
+instru\c{c}\~oes ``c\^amera nivelada, boa ilumina\c{c}\~ao, dist\^ancia ideal'', orienta o
+usu\'ario \emph{antes} de tirar a foto, prevenindo erros de captura.
+
+\subsection{Fluxo de contagem}
+
+Ap\'os o \emph{login}, o sistema fixa o funcion\'ario ativo (``\emph{As pr\'oximas contagens
+ser\~ao registradas automaticamente neste usu\'ario}''), de modo que o operador n\~ao
+precisa se reidentificar a cada foto -- ganho importante para quem processa dezenas de
+pedidos em sequ\^encia. Tirar a foto e tocar em ``Contar parafusos'' \'e tudo o que se
+exige; em poucos segundos a tela de resultado (Figura~\ref{fig:resultado}) mostra a imagem
+com as caixas desenhadas, a contagem e a confian\c{c}a m\'edia.
+
+\subsection{Pontos positivos percebidos}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Curva de aprendizado quase nula}: a interface segue o padr\~ao de um
+        formul\'ario web comum; qualquer operador acostumado a usar um celular consegue
+        utiliz\'a-la sem treinamento.
+  \item \textbf{Transpar\^encia}: ao desenhar as \emph{bounding boxes} sobre a foto, o
+        sistema permite que o operador \emph{confira visualmente} a contagem, em vez de
+        confiar cegamente em um n\'umero. A mensagem de revis\~ao refor\c{c}a esse cuidado.
+  \item \textbf{Rastreabilidade}: cada contagem fica vinculada ao funcion\'ario, setor e
+        hor\'ario, e o \emph{dashboard} (Figura~\ref{fig:dashboard}) consolida tudo por dia.
+  \item \textbf{Autonomia gerencial}: o supervisor exporta CSV/PDF e registra o fechamento
+        do dia (Figura~\ref{fig:fechamento}) sem depender da equipe de TI.
+\end{itemize}
+
+\subsection{Limita\c{c}\~oes e atritos observados}
+
+\begin{itemize}[leftmargin=*]
+  \item A qualidade da contagem depende fortemente da foto: fundo polu\'ido, sobreposi\c{c}\~ao
+        de parafusos ou ilumina\c{c}\~ao ruim degradam o resultado -- da\'i a import\^ancia
+        do guia de captura e da etapa de revis\~ao manual.
+  \item Na estrat\'egia servidor + cliente web, \'e necess\'aria conectividade (Wi-Fi local
+        ou t\'unel); em \'areas sem rede, a alternativa \'e o modelo embarcado (TFLite/NCNN).
+  \item A corre\c{c}\~ao manual, embora dispon\'ivel, exige um passo a mais do operador
+        quando o modelo erra -- um custo aceit\'avel diante do ganho de confiabilidade.
+\end{itemize}
+
+\subsection{Impress\~ao geral}
+
+Na pr\'atica, a ferramenta transforma uma tarefa tediosa e suscet\'ivel a erro -- contar
+parafusos um a um -- em uma a\c{c}\~ao de poucos segundos, com registro autom\'atico e
+audit\'avel. O equil\'ibrio entre automa\c{c}\~ao (contagem pelo modelo) e controle humano
+(revis\~ao e corre\c{c}\~ao) torna o sistema confi\'avel o suficiente para uso real, sem
+remover do operador a palavra final sobre o pedido enviado ao cliente.
 
 %% ============================================================
 \section{Conclus\~ao}
