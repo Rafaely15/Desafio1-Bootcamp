@@ -1,0 +1,101 @@
+﻿Total pages: 4
+--- PAGE 1 ---
+Olá, candidato(a)!
+Seja bem-vindo ao desafio prático do Bootcamp de Ciência de Dados e Inteligência Artificial. À
+seguir serão apresentadas informações importantes para o desenvolvimento do desafio.
+Informações Importantes:
+● A prova online poderá ser realizada de qualquer computador com acesso à internet;
+● O envio da solução deverá ser finalizado até o dia 31/05/2026 às 23h59m59s;
+● Sua resolução deverá ser enviada através do formulário que pode ser acesso através do
+link abaixo:
+○ https://forms.gle/xe8iD3UQbUE98F7B9
+● O arquivo deve estar nomeado com seu nome completo no momento da submissão;
+● A participação da entrevista está condicionada ao envio da resolução do estudo de caso;
+● Não nos responsabilizamos por problemas de instabilidade de internet;
+Desafio 1
+Contexto
+Uma empresa metal-mecânica entrou em contato com o Programa de Residência em IA para o
+desenvolvimento de um projeto com o objetivo de automatizar o processo de contagem dos parafusos
+que deveriam ser coletados e inseridos em pacotes para o envio aos clientes (processo denominado
+picking), com o intuito de automatizar alguns de seus processos de garantia de qualidade e redução de
+envios de pacotes com itens faltantes ou sobressalentes.
+Atualmente, a contagem dos itens é feita por um funcionário que é responsável por coletar os
+parafusos e registrar, em aplicativo instalado em um smartphone disponibilizado pela própria empresa, a
+quantidade de itens coletados. A empresa ressaltou, ainda, que gostaria que o sistema fosse executado
+utilizando-se os mesmos smartphones que atualmente já são disponibilizados e utilizados pelo seu time
+de picking. À seguir, seguem as imagens disponibilizadas pela empresa:
+Figura 1. Imagens fornecidas pelo cliente com exemplos de pedidos.
+Entregáveis:
+Como Pesquisador Residente, você deve:
+1) desenvolver, a partir das imagens fornecidas pelo cliente, um sistema de contagem de
+parafusos para o processo de picking;
+2) implementar a solução em Python;
+
+--- PAGE 2 ---
+3) preparar um relatório técnico que apresente o problema, a metodologia e os modelos
+utilizados para o desenvolvimento da solução e os resultados obtidos;
+Dados:
+A empresa forneceu um conjunto de 5 imagens que foram capturadas inicialmente pelo time de
+picking, apesar das solicitações por mais dados por parte do time de desenvolvimento, as quais estão
+disponíveis no link abaixo.
+Link para as imagens: Desafio-1
+Critérios de avaliação:
+1) Organização e estruturação do código;
+2) Criatividade na proposta e na resolução do problema;
+3) Clareza nos critérios de tomada de decisão;
+4) Capacidade analítica.
+Será considerado como pontuação extra se:
+1) A solução for implementada na forma de uma aplicação (por exemplo, dentro de uma
+aplicação web);
+2) O sistema puder ser executado com pouco recurso computacional para a execução em um
+smartphone.
+Desafio 2
+Contexto
+Uma empresa do setor da construção civil contactou o Programa de Residência em IA com o
+intuito de desenvolver um projeto que busca aumentar a satisfação de seus clientes, aumentando a
+qualidade dos empreendimentos entregues.
+Hoje, ao final do processo de concretagem, um funcionário especializado em identificar e corrigir
+trincas e fissuras faz a inspeção de cada uma das paredes que é levantada ao longo da construção do
+empreendimento. Porém, principalmente por conta da fadiga, muitas vezes os funcionários
+responsáveis por tais atividades acabam deixando algumas trincas passarem, o que impacta
+diretamente na qualidade das camadas de revestimento ou pintura que serão adicionadas
+posteriormente.
+Com o intuito de mitigar tal problema, o Programa de Residência em IA foi contratado para
+desenvolver uma solução que deveria ser embarcada em um dispositivo móvel capaz de capturar
+imagens, as quais devem ser inspecionadas para a identificação de trincas e fissuras, além de detecção
+do posicionamento de tais falhas. Com isto, a empresa busca reduzir retrabalho e aumentar a qualidade
+dos seus empreendimentos.
+
+--- PAGE 3 ---
+Tal solução deve processar a imagem e identificar trincas, de tal forma a garantir uma maior
+qualidade nos empreendimentos entregues aos clientes, além de reduzir a quantidade de retrabalho em
+etapas posteriores. A seguir seguem alguns exemplos de trincas fornecidas pelo cliente:
+Figura 2. Imagens de trincas fornecidas pelo cliente
+Entregáveis
+Como Pesquisador Residente, você deve:
+1) desenvolver, a partir das imagens e rótulos fornecidos pelo cliente, um sistema para
+detectar e identificar trincas e fissuras em paredes;
+2) implementar a solução em Python;
+3) preparar um relatório técnico que apresente o problema, a metodologia e os modelos
+utilizados para o desenvolvimento da solução e os resultados obtidos;
+Dados:
+Para o desenvolvimento do projeto, a empresa compartilhou um conjunto de dados que foi obtido
+ao longo dos últimos anos. O dataset é composto por uma pasta contendo as imagens (images) das
+fissuras e rachaduras, e uma pasta de rótulos (labels) indicando a posição das fissuras.
+Link para as imagens: Desafio-2
+Critérios de avaliação:
+1) Organização e estruturação do código;
+2) Criatividade na proposta e na resolução do problema;
+3) Clareza nos critérios de tomada de decisão;
+4) Capacidade analítica.
+Será considerado como pontuação extra se:
+1) A solução for implementada na forma de uma aplicação (por exemplo, dentro de uma
+aplicação web);
+2) O sistema puder ser executado com pouco recurso computacional para a execução em um
+dispositivo com baixa capacidade de processamento.
+Entrega final
+
+--- PAGE 4 ---
+Os resultados do projeto devem ser enviados na forma de um relatório técnico, e o código
+desenvolvido deve ser submetido juntamente com o relatório, dentro de uma pasta compactada (.zip).
+

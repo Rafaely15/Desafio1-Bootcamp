@@ -106,8 +106,9 @@ details.sidebar-section {
   margin: 0 auto;
   padding: 16px 18px;
   display: flex;
-  align-items: center;
-  gap: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .brandbar h1 {
@@ -115,6 +116,12 @@ details.sidebar-section {
   color: #fff;
   font-size: clamp(1.35rem, 3vw, 2.15rem);
   letter-spacing: 0;
+}
+
+.brandbar span {
+  color: rgba(255, 255, 255, .82);
+  font-size: .98rem;
+  font-weight: 700;
 }
 
 .shell {

@@ -39,7 +39,7 @@ def ensure_schema() -> None:
 
 ensure_schema()
 
-app = FastAPI(title="Sistema de Contagem de Parafusos")
+app = FastAPI(title="Metal Mecânica - Sistema de Contagem de Parafusos")
 app.mount("/static", StaticFiles(directory=config.BASE_DIR / "app" / "static"), name="static")
 templates = Jinja2Templates(directory=config.BASE_DIR / "app" / "templates")
 
