@@ -653,6 +653,18 @@ button {
   margin-bottom: 14px;
 }
 
+.inline-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.inline-actions .button {
+  min-height: 44px;
+  font-size: .95rem;
+}
+
 .section-title-row p {
   margin-bottom: 0;
 }
