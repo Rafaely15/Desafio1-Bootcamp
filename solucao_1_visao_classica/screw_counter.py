@@ -50,6 +50,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
 }
 
 SEGMENTATION_MODES = [
+    "modo_objetos",
     "modo_claro",
     "modo_cinza",
     "modo_bandeja",
@@ -174,7 +175,9 @@ def classify_scene(img_bgr: np.ndarray) -> dict[str, Any]:
     tray_like = bool(np.mean(saturation > 45) > 0.20 and 0.10 < light_bg_ratio < 0.85 and counts["n_big_components"] <= 8)
     textured = bool(noise_estimate > 38 or texture_ratio > 0.24 or counts["noise_ratio"] > 0.82)
 
-    if touching_score > 0.25 or density > 0.15:
+    if textured and (noise_estimate > 32 or counts["n_tiny_components"] > counts["n_big_components"] * 3):
+        mode = "modo_objetos"
+    elif touching_score > 0.25 or density > 0.15:
         mode = "modo_denso"
     elif scale_variation > 3.0:
         mode = "modo_multiescala"
@@ -212,7 +215,19 @@ def segment_image(img_bgr: np.ndarray, mode: str, config: dict[str, Any] | None 
     enhanced = _enhance_gray(img_bgr, clip=2.5 if mode in {"modo_texturizado", "modo_denso"} else 2.0)
     pre = enhanced.copy()
 
-    if mode == "modo_claro":
+    if mode == "modo_objetos":
+        gray_smooth = cv2.GaussianBlur(gray, (0, 0), 21)
+        value = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)[:, :, 2]
+        value_smooth = cv2.GaussianBlur(value, (0, 0), 31)
+        gray_diff = cv2.absdiff(gray, gray_smooth)
+        value_diff = cv2.absdiff(value, value_smooth)
+        score = cv2.addWeighted(gray_diff, 1.0, value_diff, 0.7, 0)
+        score = cv2.GaussianBlur(score, (_odd(3), _odd(3)), 0)
+        percentile = 98.0 if cfg.get("object_percentile") is None else float(cfg["object_percentile"])
+        threshold = max(float(np.percentile(score, percentile)), 18.0)
+        _, mask = cv2.threshold(score, threshold, 255, cv2.THRESH_BINARY)
+        pre = score
+    elif mode == "modo_claro":
         pre = cv2.GaussianBlur(pre, (_odd(5), _odd(5)), 0) if cfg["blur"] else pre
         _, mask = cv2.threshold(pre, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         edges = cv2.Canny(pre, 45, 135)
@@ -248,11 +263,15 @@ def segment_image(img_bgr: np.ndarray, mode: str, config: dict[str, Any] | None 
     else:
         raise ValueError(f"Modo de segmentacao desconhecido: {mode}")
 
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, _kernel(cfg["open_kernel"]))
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, _kernel(cfg["close_kernel"]))
+    open_size = int(cfg["open_kernel"])
+    close_size = int(cfg["close_kernel"])
+    if mode == "modo_objetos":
+        close_size = min(close_size, 5)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, _kernel(open_size))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, _kernel(close_size))
     if mode in {"modo_denso", "modo_multiescala"}:
         mask = cv2.dilate(mask, _kernel(3), iterations=1)
-    mask = _remove_border(mask)
+    mask = _remove_border(mask, border=8 if mode == "modo_objetos" else 3)
     return {"mask": mask, "preprocessed": pre, "edge_map": cv2.Canny(pre, 50, 150), "mode": mode}
 
 
@@ -269,6 +288,9 @@ def _extract_components(mask: np.ndarray, config: dict[str, Any], source: str = 
             continue
         x, y, bw, bh = (int(stats[label, cv2.CC_STAT_LEFT]), int(stats[label, cv2.CC_STAT_TOP]), int(stats[label, cv2.CC_STAT_WIDTH]), int(stats[label, cv2.CC_STAT_HEIGHT]))
         if bw < 4 or bh < 4:
+            continue
+        border_margin = int(config.get("border_margin", 0) or 0)
+        if border_margin and (x <= border_margin or y <= border_margin or x + bw >= w - border_margin or y + bh >= h - border_margin):
             continue
         aspect = max(bw, bh) / max(min(bw, bh), 1)
         if aspect > 14:
@@ -398,6 +420,49 @@ def detector_fragmentos_dbscan(mask: np.ndarray, config: dict[str, Any], ref_are
     return {"name": "detector_fragmentos_dbscan", "count": len(detections), "detections": detections, "components": comps}
 
 
+def detector_object_clusters(mask: np.ndarray, config: dict[str, Any], ref_area: float) -> dict[str, Any]:
+    """Agrupa fragmentos visuais próximos para fundos cinza/texturizados."""
+    cluster_cfg = config.copy()
+    cluster_cfg["min_area"] = max(110, int(config["min_area"] * 0.35))
+    cluster_cfg["border_margin"] = max(10, int(min(mask.shape[:2]) * 0.025))
+    comps = _extract_components(mask, cluster_cfg, "object_fragment")
+    if not comps:
+        return {"name": "detector_objetos", "count": 0, "detections": [], "components": []}
+
+    pts = np.array([[c.cx, c.cy] for c in comps], dtype=np.float32)
+    eps = float(config.get("object_cluster_eps") or max(45.0, min(mask.shape[:2]) * 0.07))
+    labels = DBSCAN(eps=eps, min_samples=1).fit_predict(pts) if HAS_SKLEARN else np.arange(len(pts))
+
+    detections: list[dict[str, Any]] = []
+    for cluster_id in sorted(set(labels)):
+        members = [c for c, label in zip(comps, labels) if label == cluster_id]
+        union = np.zeros_like(mask, dtype=np.uint8)
+        for member in members:
+            union = cv2.bitwise_or(union, member.mask)
+        x, y, bw, bh = cv2.boundingRect(union)
+        if x <= cluster_cfg["border_margin"] or y <= cluster_cfg["border_margin"] or x + bw >= mask.shape[1] - cluster_cfg["border_margin"] or y + bh >= mask.shape[0] - cluster_cfg["border_margin"]:
+            continue
+        area = float(sum(m.area for m in members))
+        if area < float(config.get("object_min_cluster_area") or 160):
+            continue
+        comp = Component(
+            int(cluster_id),
+            area,
+            (x, y, bw, bh),
+            float(np.mean([m.cx for m in members])),
+            float(np.mean([m.cy for m in members])),
+            max(bw, bh) / max(min(bw, bh), 1),
+            float(np.mean([m.solidity for m in members])),
+            area / max(bw * bh, 1),
+            union,
+            "object_cluster",
+            len(members),
+            float(np.mean([m.gradient_variance for m in members])),
+        )
+        detections.append(_detection_from_component(comp, 1, "object_cluster", ref_area))
+    return {"name": "detector_objetos", "count": len(detections), "detections": detections, "components": comps}
+
+
 def detector_multiescala(img_bgr: np.ndarray, config: dict[str, Any], ref_area: float) -> dict[str, Any]:
     all_detections: list[dict[str, Any]] = []
     for scale in (0.75, 1.0, 1.25):
@@ -476,7 +541,11 @@ def _choose_ensemble(candidates: list[dict[str, Any]], scene: dict[str, Any]) ->
         if conservative:
             return min(conservative, key=lambda c: (c["count"], c.get("penalty", 999)))
 
-    if scene["many_touching_objects"]:
+    if any(c.get("segmentation_mode") == "modo_objetos" for c in valid) and (
+        scene.get("textured_background") or scene.get("noise_ratio", 0) > 0.65
+    ):
+        pref = ["detector_objetos", "detector_watershed", "detector_contornos"]
+    elif scene["many_touching_objects"]:
         pref = ["detector_watershed", "detector_multiescala", "detector_contornos"]
     elif scene["textured_background"] and scene["n_tiny_components"] > scene["n_big_components"] * 4:
         pref = ["detector_fragmentos_dbscan", "detector_watershed", "detector_contornos"]
@@ -531,8 +600,9 @@ def count_screws(
         comps = _extract_components(seg["mask"], cfg)
         ref = estimate_ref_area(comps, float(cfg["ref_area"])) if cfg["use_ref_auto"] else float(cfg["ref_area"])
         contour = detector_contours(seg["mask"], cfg, ref)
+        object_cluster = detector_object_clusters(seg["mask"], cfg, ref) if mode == "modo_objetos" else None
         if not cfg["ensemble"]:
-            for cand in (contour,):
+            for cand in ((object_cluster or contour),):
                 c = cand.copy()
                 c["segmentation_mode"] = mode
                 c["mask"] = seg["mask"]
@@ -544,7 +614,10 @@ def count_screws(
             continue
         ws = detector_watershed(seg["mask"], cfg, ref) if cfg["watershed"] else contour
         db = detector_fragmentos_dbscan(seg["mask"], cfg, ref)
-        for cand in (contour, ws, db):
+        detector_list = [contour, ws, db]
+        if object_cluster is not None:
+            detector_list.insert(0, object_cluster)
+        for cand in detector_list:
             c = cand.copy()
             c["segmentation_mode"] = mode
             c["mask"] = seg["mask"]
