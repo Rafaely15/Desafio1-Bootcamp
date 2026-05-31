@@ -49,3 +49,4 @@
 2026-05-31T00:20:53Z INF precheck complete hard_fail=true run_id=e421b8fe-0c46-45c6-880d-292d2c2c8a40
 2026-05-31T00:25:35Z ERR  error="Incoming request ended abruptly: context canceled" connIndex=0 event=1 ingressRule=0 originService=http://localhost:8001
 2026-05-31T00:25:35Z ERR Request failed error="Incoming request ended abruptly: context canceled" connIndex=0 dest=https://cleaners-talks-acquisition-clan.trycloudflare.com/predict event=0 ip=198.41.192.167 type=http
+2026-05-31T00:45:48Z ERR Failed to refresh DNS local resolver error="lookup region1.v2.argotunnel.com: i/o timeout"

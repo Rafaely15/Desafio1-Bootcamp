@@ -3,99 +3,113 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Metal Mecânica - Dashboard de contagens</title>
+  <title>Metal Mecanica - Dashboard de contagens</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <header class="brandbar">
-    <div class="brandbar-inner">
-      <h1>Metal Mecânica</h1>
-      <span>Contador de Parafusos</span>
-    </div>
-  </header>
-
-  <main class="shell">
-    <nav class="nav">
-      <a class="button secondary" href="/">Nova contagem</a>
-      <a class="button secondary" href="/export/csv">Exportar CSV geral</a>
-      <a class="button secondary" href="/export/csv/today">CSV do dia</a>
-      <a class="button secondary" href="/export/pdf/today">PDF do dia</a>
-    </nav>
-
-    <section class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Funcionário</th>
-            <th>Matrícula</th>
-            <th>Setor</th>
-            <th>Pedido/lote</th>
-            <th>Data</th>
-            <th>Hora</th>
-            <th>Automática</th>
-            <th>Final</th>
-            <th>Status</th>
-            <th>Conf.</th>
-            <th>Original</th>
-            <th>Processada</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for group in grouped_records %}
-            <tr class="day-separator">
-              <td colspan="13">
-                <strong>{{ group.date.strftime("%d/%m/%Y") }}</strong>
-                <span>
-                  Registros: {{ group.summary.registros }} |
-                  Automática: {{ group.summary.automatico }} |
-                  Final: {{ group.summary.final }} |
-                  Correções: {{ group.summary.correcoes }}
-                </span>
-              </td>
-            </tr>
-            {% for item in group.records %}
-            <tr>
-              <td>{{ item.id }}</td>
-              <td>{{ item.funcionario_nome }}</td>
-              <td>{{ item.funcionario_id or "-" }}</td>
-              <td>{{ item.setor or "-" }}</td>
-              <td>{{ item.pedido or "-" }}</td>
-              <td>{{ item.data_hora.strftime("%d/%m/%Y") }}</td>
-              <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
-              <td>{{ item.total_parafusos }}</td>
-              <td>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }}</td>
-              <td>{{ item.status or "confirmada" }}</td>
-              <td>{{ "%.2f"|format(item.confianca_media) }}</td>
-              <td><a href="{{ static_url_for_path(item.imagem_original) }}" target="_blank">abrir</a></td>
-              <td><a href="{{ static_url_for_path(item.imagem_processada) }}" target="_blank">abrir</a></td>
-            </tr>
-            {% endfor %}
-          {% else %}
-          <tr><td colspan="13">Nenhuma contagem registrada.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </section>
-
-    <section class="panel day-close-panel">
-      {% if finalizado %}
-        <div class="quality-ok">Finalização registrada: {{ finalizado }}</div>
-      {% endif %}
-      <h2>Fechamento do dia</h2>
-      <div class="metric-grid">
-        <div class="metric">Registros<strong>{{ today_summary.registros }}</strong></div>
-        <div class="metric">Automática<strong>{{ today_summary.automatico }}</strong></div>
-        <div class="metric">Final<strong>{{ today_summary.final }}</strong></div>
-        <div class="metric">Correções<strong>{{ today_summary.correcoes }}</strong></div>
+  <main class="dashboard-app">
+    <header class="app-header dashboard-header">
+      <div class="brand-mark" aria-hidden="true"><span></span></div>
+      <div>
+        <h1>Metal Mec&acirc;nica</h1>
+        <p>Dashboard de Contagens</p>
       </div>
-      <form action="/finalizar-dia" method="post">
-        <button type="submit">Registrar finalização do dia</button>
-      </form>
-      <div class="nav day-close-actions">
-        <a class="button secondary" href="/export/csv/today">Baixar CSV antes de finalizar</a>
-        <a class="button secondary" href="/export/pdf/today">Baixar PDF antes de finalizar</a>
-      </div>
+    </header>
+
+    <section class="screen">
+      <section class="card dashboard-summary">
+        {% if finalizado %}
+          <div class="quality-ok">Finaliza&ccedil;&atilde;o registrada: {{ finalizado }}</div>
+        {% endif %}
+        <div class="section-title-row">
+          <div>
+            <h2>Fechamento do dia</h2>
+            <p>Resumo operacional das contagens realizadas hoje.</p>
+          </div>
+          <a class="button secondary" href="/">Nova contagem</a>
+        </div>
+
+        <div class="metric-grid four">
+          <div class="metric">Registros<strong>{{ today_summary.registros }}</strong></div>
+          <div class="metric">Autom&aacute;tica<strong>{{ today_summary.automatico }}</strong></div>
+          <div class="metric">Final<strong>{{ today_summary.final }}</strong></div>
+          <div class="metric">Corre&ccedil;&otilde;es<strong>{{ today_summary.correcoes }}</strong></div>
+        </div>
+
+        <form action="/finalizar-dia" method="post">
+          <button type="submit" class="button full">Registrar finaliza&ccedil;&atilde;o do dia</button>
+        </form>
+
+        <div class="action-row single">
+          <a class="button secondary" href="/export/pdf/today">Baixar PDF do dia</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <h2>Registros recentes</h2>
+            <p>Hist&oacute;rico agrupado por dia com imagens originais e processadas.</p>
+          </div>
+          <a class="button secondary" href="/export/pdf/today">Exportar PDF</a>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Funcion&aacute;rio</th>
+                <th>Matr&iacute;cula</th>
+                <th>Setor</th>
+                <th>Pedido/lote</th>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Autom&aacute;tica</th>
+                <th>Final</th>
+                <th>Status</th>
+                <th>Conf.</th>
+                <th>Original</th>
+                <th>Processada</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for group in grouped_records %}
+                <tr class="day-separator">
+                  <td colspan="13">
+                    <strong>{{ group.date.strftime("%d/%m/%Y") }}</strong>
+                    <span>
+                      Registros: {{ group.summary.registros }} |
+                      Autom&aacute;tica: {{ group.summary.automatico }} |
+                      Final: {{ group.summary.final }} |
+                      Corre&ccedil;&otilde;es: {{ group.summary.correcoes }}
+                    </span>
+                  </td>
+                </tr>
+                {% for item in group.records %}
+                <tr>
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.funcionario_nome }}</td>
+                  <td>{{ item.funcionario_id or "-" }}</td>
+                  <td>{{ item.setor or "-" }}</td>
+                  <td>{{ item.pedido or "-" }}</td>
+                  <td>{{ item.data_hora.strftime("%d/%m/%Y") }}</td>
+                  <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
+                  <td>{{ item.total_parafusos }}</td>
+                  <td>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }}</td>
+                  <td>{{ item.status or "confirmada" }}</td>
+                  <td>{{ "%.2f"|format(item.confianca_media) }}</td>
+                  <td><a href="{{ static_url_for_path(item.imagem_original) }}" target="_blank">abrir</a></td>
+                  <td><a href="{{ static_url_for_path(item.imagem_processada) }}" target="_blank">abrir</a></td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr><td colspan="13">Nenhuma contagem registrada.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </section>
   </main>
 </body>

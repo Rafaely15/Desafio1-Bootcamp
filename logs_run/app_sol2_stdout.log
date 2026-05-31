@@ -1,0 +1,21 @@
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/css/style.css HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/assets/capture_guide.png HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /favicon.ico HTTP/1.1" 307 Temporary Redirect
+INFO:     45.191.255.124:0 - "GET /static/favicon.ico HTTP/1.1" 404 Not Found
+INFO:     45.191.255.124:0 - "POST /login HTTP/1.1" 303 See Other
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/20260530_214500_31547b8299d14654a82bed135357c561_20260530_214506_880581.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/20260530_214540_16031d301a05400c9b9ef7d97bfabeea_20260530_214541_610566.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/20260530_214602_1670f88a3bbf47a7af348194aae9fa0d_20260530_214603_048157.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /record/41/correct HTTP/1.1" 303 See Other
+INFO:     45.191.255.124:0 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/20260530_214632_69df8e7e9aa84877bd45fc36a0f42729_20260530_214632_836832.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /record/42/correct HTTP/1.1" 303 See Other
+INFO:     45.191.255.124:0 - "GET /dashboard HTTP/1.1" 200 OK
