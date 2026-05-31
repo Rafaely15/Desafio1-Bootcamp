@@ -30,15 +30,22 @@ METHOD_COLORS = {
 }
 
 
+MAX_WIDTH = 1400
+
 def _ensure_min_width(img: np.ndarray, min_width: int = 640) -> tuple[np.ndarray, float]:
-    """Amplia imagens pequenas para melhorar gradiente e segmentação."""
+    """Redimensiona imagens: amplia pequenas, reduz grandes (máx 1400px)."""
     h, w = img.shape[:2]
-    if w >= min_width:
-        return img.copy(), 1.0
-    scale = min_width / float(w)
-    new_h = int(round(h * scale))
-    resized = cv2.resize(img, (min_width, new_h), interpolation=cv2.INTER_CUBIC)
-    return resized, scale
+    if w > MAX_WIDTH:
+        scale = MAX_WIDTH / float(w)
+        new_h = int(round(h * scale))
+        resized = cv2.resize(img, (MAX_WIDTH, new_h), interpolation=cv2.INTER_AREA)
+        return resized, scale
+    if w < min_width:
+        scale = min_width / float(w)
+        new_h = int(round(h * scale))
+        resized = cv2.resize(img, (min_width, new_h), interpolation=cv2.INTER_CUBIC)
+        return resized, scale
+    return img.copy(), 1.0
 
 
 def _as_bgr_debug(img: np.ndarray) -> np.ndarray:
@@ -161,14 +168,14 @@ def contar_parafusos_array(
             "ref_area": ref_area,
             "min_area": min_area,
             "use_ref_auto": use_ref_auto,
-            "ensemble": bool(params.get("ensemble", True)),
+            "ensemble": bool(params.get("ensemble", False)),
             "mode": params.get("mode", "auto"),
             "watershed": bool(params.get("watershed", True)),
             "blur": bool(params.get("blur", True)),
             "close_kernel": int(params.get("close_kernel", 9)),
             "open_kernel": int(params.get("open_kernel", 3)),
         },
-        return_debug=True,
+        return_debug=debug,
     )
     saida = desenhar_resultado_limpo(img_proc, result, show_rejected=show_rejected)
     dbg = result.get("debug_images", {})

@@ -531,6 +531,17 @@ def count_screws(
         comps = _extract_components(seg["mask"], cfg)
         ref = estimate_ref_area(comps, float(cfg["ref_area"])) if cfg["use_ref_auto"] else float(cfg["ref_area"])
         contour = detector_contours(seg["mask"], cfg, ref)
+        if not cfg["ensemble"]:
+            for cand in (contour,):
+                c = cand.copy()
+                c["segmentation_mode"] = mode
+                c["mask"] = seg["mask"]
+                c["preprocessed"] = seg["preprocessed"]
+                c["edge_map"] = seg["edge_map"]
+                c["ref_area"] = ref
+                c["penalty"] = abs(c["count"] - max(1, round(np.count_nonzero(seg["mask"]) / max(ref, 1.0))))
+                candidates.append(c)
+            continue
         ws = detector_watershed(seg["mask"], cfg, ref) if cfg["watershed"] else contour
         db = detector_fragmentos_dbscan(seg["mask"], cfg, ref)
         for cand in (contour, ws, db):

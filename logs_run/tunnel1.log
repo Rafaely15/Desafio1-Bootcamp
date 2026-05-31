@@ -72,3 +72,12 @@
 2026-05-31T00:00:13Z ERR  error="Incoming request ended abruptly: context canceled" connIndex=0 event=1 ingressRule=0 originService=http://localhost:8001
 2026-05-31T00:00:13Z ERR Request failed error="Incoming request ended abruptly: context canceled" connIndex=0 dest=https://progressive-labor-signatures-configuring.trycloudflare.com/predict event=0 ip=198.41.200.113 type=http
 2026-05-31T00:05:42Z ERR Failed to refresh DNS local resolver error="lookup region1.v2.argotunnel.com: i/o timeout"
+2026-05-31T00:09:54Z INF Initiating graceful shutdown due to signal terminated ...
+2026-05-31T00:09:54Z ERR failed to run the datagram handler error="Application error 0x0 (remote)" connIndex=0 event=0 ip=198.41.200.113
+2026-05-31T00:09:54Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.113
+2026-05-31T00:09:54Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.113
+2026-05-31T00:09:54Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.113
+2026-05-31T00:09:54Z ERR Connection terminated connIndex=0
+2026-05-31T00:09:54Z ERR no more connections active and exiting
+2026-05-31T00:09:54Z INF Tunnel server stopped
+2026-05-31T00:09:54Z INF Metrics server stopped

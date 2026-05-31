@@ -49,3 +49,12 @@
 2026-05-30T23:50:48Z INF precheck complete hard_fail=true run_id=f0264e95-f782-4f53-a323-c9da0808e70f
 2026-05-30T23:58:42Z ERR  error="Incoming request ended abruptly: context canceled" connIndex=0 event=1 ingressRule=0 originService=http://localhost:8000
 2026-05-30T23:58:42Z ERR Request failed error="Incoming request ended abruptly: context canceled" connIndex=0 dest=https://coastal-genome-penn-justify.trycloudflare.com/predict event=0 ip=198.41.200.43 type=http
+2026-05-31T00:09:54Z INF Initiating graceful shutdown due to signal terminated ...
+2026-05-31T00:09:54Z ERR failed to run the datagram handler error="Application error 0x0 (remote)" connIndex=0 event=0 ip=198.41.200.43
+2026-05-31T00:09:54Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.43
+2026-05-31T00:09:54Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.43
+2026-05-31T00:09:54Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.43
+2026-05-31T00:09:54Z ERR Connection terminated connIndex=0
+2026-05-31T00:09:54Z ERR no more connections active and exiting
+2026-05-31T00:09:54Z INF Tunnel server stopped
+2026-05-31T00:09:54Z INF Metrics server stopped
