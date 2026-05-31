@@ -1,0 +1,16 @@
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
+INFO:     45.191.255.124:0 - "GET /static/assets/capture_guide.png HTTP/1.1" 304 Not Modified
+INFO:     45.191.255.124:0 - "GET /favicon.ico HTTP/1.1" 307 Temporary Redirect
+INFO:     45.191.255.124:0 - "GET /static/favicon.ico HTTP/1.1" 404 Not Found
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /static/css/style.css HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /static/assets/capture_guide.png HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /favicon.ico HTTP/1.1" 307 Temporary Redirect
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /static/favicon.ico HTTP/1.1" 404 Not Found
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/result_20260530_214025_008d14f8a3424c3bad97470444155f51.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/result_20260530_214102_1feec93488eb427c9c547a6f4c393972.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/result_20260530_214130_fa689c240f764788af01d63f60bf2f0f.jpg HTTP/1.1" 200 OK
