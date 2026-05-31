@@ -1,0 +1,32 @@
+INFO:     127.0.0.1:59228 - "GET /export/pdf/today HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /export/pdf/today HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /export/pdf/today HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "POST /logout HTTP/1.1" 303 See Other
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54918 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54918 - "GET /static/css/style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54918 - "GET /static/assets/capture_guide.png HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/assets/capture_guide.png HTTP/1.1" 304 Not Modified
+INFO:     45.191.255.124:0 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/result_20260531_000411_b6294a843bc44d349353c78f8b236efe.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/result_20260531_000441_7450b8f275f04357a0495d938b9c3c2d.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/result_20260531_000507_c9bb71c279784090871beb2edb6915b5.jpg HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET / HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     45.191.255.124:0 - "GET /static/results/result_20260531_000546_56bc55dbbfc949b5939f3ca0e6c0667d.jpg HTTP/1.1" 200 OK
+INFO:     192.168.1.106:54472 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.106:54481 - "GET /loginMsg.js HTTP/1.1" 404 Not Found
+INFO:     192.168.1.106:54482 - "GET /cgi/get.cgi?cmd=home_login HTTP/1.1" 404 Not Found
+INFO:     192.168.1.106:54488 - "POST /boaform/admin/formTracert HTTP/1.1" 404 Not Found
+INFO:     2804:6888:cc3d:1:b4fa:cc14:4acb:12d7:0 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54305 - "GET / HTTP/1.1" 200 OK
