@@ -3,52 +3,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Metal Mecânica - Resultado da contagem</title>
+  <title>Metal Mecanica - Resultado da contagem</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <header class="brandbar">
-    <div class="brandbar-inner">
-      <h1>Metal Mecânica</h1>
-      <span>Contador de Parafusos</span>
-    </div>
-  </header>
-
-  <main class="shell">
-    <nav class="nav">
-      <a class="button secondary" href="/">Nova contagem</a>
-      <a class="button secondary" href="/dashboard">Dashboard</a>
-      <a class="button secondary" href="/export/csv/today">CSV do dia</a>
-    </nav>
-
-    <section class="result-grid">
+  <main class="phone-app">
+    <header class="app-header">
+      <div class="brand-mark" aria-hidden="true"><span></span></div>
       <div>
-        <img class="result-image" src="{{ imagem_processada_url }}" alt="Imagem processada com caixas de deteccao">
-        <div class="quality-ok">Foto processada. Revise a imagem antes de considerar a contagem final.</div>
+        <h1>Metal Mec&acirc;nica</h1>
+        <p>Contador de Parafusos</p>
       </div>
+    </header>
 
-      <aside class="panel">
-        <div class="success-count">
-          <span>Contagem estimada</span>
-          <strong>{{ registro.total_parafusos }}</strong>
-          <span>parafusos</span>
+    <section class="screen">
+      <section class="card result-card">
+        <div class="result-heading">
+          <div class="success-icon" aria-hidden="true"></div>
+          <div>
+            <h2>Contagem conclu&iacute;da</h2>
+            <p>Quantidade identificada:</p>
+            <strong>{{ registro.total_parafusos }} parafusos</strong>
+          </div>
         </div>
 
-        <div class="metric">Confiança media<strong>{{ "%.2f"|format(registro.confianca_media) }}</strong></div>
-        <div class="metric">Funcionário<strong>{{ registro.funcionario_nome }}</strong></div>
-        {% if registro.funcionario_id %}<div class="metric">Matrícula/ID<strong>{{ registro.funcionario_id }}</strong></div>{% endif %}
-        {% if registro.pedido %}<div class="metric">Pedido/lote<strong>{{ registro.pedido }}</strong></div>{% endif %}
-        <div class="metric">Data e hora<strong>{{ registro.data_hora.strftime("%d/%m/%Y %H:%M:%S") }}</strong></div>
+        <div class="info-grid">
+          <div><span>Funcion&aacute;rio</span><strong>{{ registro.funcionario_nome }}</strong></div>
+          <div><span>Data</span><strong>{{ registro.data_hora.strftime("%d/%m/%Y") }}</strong></div>
+          {% if registro.funcionario_id %}<div><span>Matr&iacute;cula</span><strong>{{ registro.funcionario_id }}</strong></div>{% endif %}
+          <div><span>Hora</span><strong>{{ registro.data_hora.strftime("%H:%M") }}</strong></div>
+          {% if registro.setor %}<div><span>Setor</span><strong>{{ registro.setor }}</strong></div>{% endif %}
+          {% if registro.pedido %}<div><span>Pedido/lote</span><strong>{{ registro.pedido }}</strong></div>{% endif %}
+        </div>
 
-        <form action="/record/{{ registro.id }}/correct" method="post">
-          <h3>A contagem esta correta?</h3>
+        <label>Imagem processada</label>
+        <img class="result-image" src="{{ imagem_processada_url }}" alt="Imagem processada com deteccoes">
+
+        <div class="quality-ok">Registro salvo com sucesso. Revise ou corrija a contagem abaixo, se necessario.</div>
+
+        <form action="/record/{{ registro.id }}/correct" method="post" class="stack-form">
           <label for="total_corrigido">Contagem final</label>
           <input id="total_corrigido" name="total_corrigido" type="number" min="0" value="{{ registro.total_parafusos }}" required>
-          <label for="observacao">Observação da conferência</label>
-          <textarea id="observacao" name="observacao">{{ registro.observacao or "" }}</textarea>
-          <button type="submit">Salvar confirmacao/correção</button>
+
+          <label for="observacao">Observa&ccedil;&atilde;o da confer&ecirc;ncia</label>
+          <textarea id="observacao" name="observacao" placeholder="Opcional">{{ registro.observacao or "" }}</textarea>
+
+          <button type="submit" class="button full">Salvar registro</button>
         </form>
-      </aside>
+      </section>
+
+      <section class="card action-card">
+        <div class="section-title-row">
+          <h2>Pr&oacute;ximas a&ccedil;&otilde;es</h2>
+          <a href="/dashboard">Dashboard</a>
+        </div>
+        <div class="action-row">
+          <a class="button secondary" href="/">Nova contagem</a>
+          <a class="button secondary" href="/export/pdf/today">Exportar PDF</a>
+        </div>
+        <div class="action-row single">
+          <a class="button ghost" href="/export/csv/today">Exportar CSV do dia</a>
+        </div>
+      </section>
     </section>
   </main>
 </body>

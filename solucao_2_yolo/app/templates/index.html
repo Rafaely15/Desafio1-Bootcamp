@@ -3,152 +3,198 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Metal Mecânica - Contador de Parafusos</title>
+  <title>Metal Mecanica - Contador de Parafusos</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-section faint">Área técnica</div>
-
-    <div class="sidebar-section">
-      <h2>Identificação do funcionário</h2>
-      {% if employee %}
-        <div class="employee-badge">
-          <strong>{{ employee.nome }}</strong>
-          <span>{{ employee.id }}{% if employee.setor %} - {{ employee.setor }}{% endif %}</span>
-        </div>
-        <form action="/logout" method="post">
-          <button class="button secondary full" type="submit">Sair / trocar funcionário</button>
-        </form>
-      {% else %}
-        <form action="/login" method="post">
-          <label for="funcionario_nome">Nome do funcionario</label>
-          <input id="funcionario_nome" name="funcionario_nome" type="text" autocomplete="name" required>
-
-          <label for="funcionario_id">Matricula ou ID</label>
-          <input id="funcionario_id" name="funcionario_id" type="text" autocomplete="off" required>
-
-          <label for="setor">Setor (opcional)</label>
-          <input id="setor" name="setor" type="text" autocomplete="off">
-
-          <button type="submit">Entrar</button>
-        </form>
-      {% endif %}
-    </div>
-
-    <details class="sidebar-section">
-      <summary>Área técnica / supervisor</summary>
-      <p class="small-muted">Modelo ativo: yolo11_screws-2</p>
-      <p class="small-muted">Confiança: {{ "%.2f"|format(conf) }}</p>
-      <a href="/dashboard">Dashboard geral</a><br>
-      <a href="/export/csv/today">CSV do dia</a>
-    </details>
-  </aside>
-
-  <section class="app-main">
-    <header class="brandbar">
-      <div class="brandbar-inner">
-        <h1>Metal Mecânica</h1>
-        <span>Contador de Parafusos</span>
+  <main class="phone-app">
+    <header class="app-header">
+      <div class="brand-mark" aria-hidden="true">
+        <span></span>
+      </div>
+      <div>
+        <h1>Metal Mec&acirc;nica</h1>
+        <p>Contador de Parafusos</p>
       </div>
     </header>
 
-    <main class="shell">
-      <div class="mobile-strip">
-        <span>Abrir no celular:</span>
-        <code>http://{{ local_ip }}:8000</code>
-        <span class="small-muted">mesma rede Wi-Fi</span>
-      </div>
-
-      <section class="guide-card wide-guide">
-        <div class="guide-title">Formato ideal</div>
-        <div class="guide-image">
-          <img src="/static/assets/capture_guide.png" alt="Guia de captura">
-        </div>
-        <div class="guide-labels">
-          <div>Mantenha a câmera nivelada</div>
-          <div>Boa iluminação</div>
-          <div>Distância ideal</div>
-        </div>
-      </section>
-
+    <section class="screen">
       {% if not employee %}
-        <div class="panel notice-panel">
-          Informe nome e matricula na lateral para liberar a captura e a contagem.
-        </div>
-      {% else %}
-        <section class="panel capture-panel">
-          <div class="quality-ok">
-            Funcionario ativo: <strong>{{ employee.nome }} - {{ employee.id }}</strong>.
-            As próximas contagens serão registradas automaticamente neste usuário.
+        <section class="card intro-card">
+          <div class="section-heading">
+            <div class="round-icon user-icon" aria-hidden="true"></div>
+            <div>
+              <h2>Identifica&ccedil;&atilde;o do colaborador</h2>
+              <p>Informe seus dados para acessar o sistema de contagem de parafusos.</p>
+            </div>
           </div>
 
-          <form action="/predict" method="post" enctype="multipart/form-data">
-            <div class="form-grid">
-              <div>
-                <label for="pedido">Número do pedido ou lote (opcional)</label>
-                <input id="pedido" name="pedido" type="text" autocomplete="off">
-              </div>
-              <div>
-                <label for="observacao">Observações (opcional)</label>
-                <input id="observacao" name="observacao" type="text" autocomplete="off">
-              </div>
-            </div>
+          <form action="/login" method="post" class="stack-form">
+            <label for="funcionario_nome">Nome do funcion&aacute;rio</label>
+            <input id="funcionario_nome" name="funcionario_nome" type="text" autocomplete="name" placeholder="Digite seu nome completo" required>
 
-            <div class="camera-box">
-              <label for="imagem">Tirar foto dos parafusos</label>
-              <p class="small-muted">No celular, toque aqui para abrir a câmera. No computador, escolha uma imagem.</p>
-              <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
-              <img id="preview" class="preview" alt="Previa da imagem selecionada">
-            </div>
+            <label for="funcionario_id">Matr&iacute;cula ou ID</label>
+            <input id="funcionario_id" name="funcionario_id" type="text" autocomplete="off" placeholder="Digite sua matr&iacute;cula ou ID" required>
 
-            <button class="full" type="submit">Contar parafusos</button>
+            <label for="setor">Setor (opcional)</label>
+            <input id="setor" name="setor" type="text" autocomplete="off" placeholder="Ex.: Produ&ccedil;&atilde;o, Qualidade, Manuten&ccedil;&atilde;o">
+
+            <button type="submit" class="button full">Entrar</button>
           </form>
         </section>
 
-        <section class="history-panel">
-          <h2>Meus registros de hoje</h2>
-          <div class="metric-grid">
-            <div class="metric">Conferências<strong>{{ summary.registros }}</strong></div>
-            <div class="metric">Parafusos<strong>{{ summary.parafusos }}</strong></div>
-            <div class="metric">Correções<strong>{{ summary.correcoes }}</strong></div>
+        <details class="card supervisor-card">
+          <summary>
+            <span class="mini-icon helmet-icon" aria-hidden="true"></span>
+            <span>
+              <strong>&Aacute;rea t&eacute;cnica / supervisor</strong>
+              <small>Acesso restrito para suporte e gest&atilde;o</small>
+            </span>
+          </summary>
+          <div class="supervisor-links">
+            <a href="/dashboard">Abrir dashboard</a>
+            <a href="/export/pdf/today">Exportar PDF do dia</a>
+            <span class="small-muted">Modelo YOLO11 ativo</span>
           </div>
+        </details>
 
-          <div class="table-wrap compact">
-            <table>
-              <thead>
-                <tr>
-                  <th>Horário</th>
-                  <th>Pedido/lote</th>
-                  <th>Automática</th>
-                  <th>Final</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for item in records_today %}
-                <tr>
-                  <td>{{ item.data_hora.strftime("%H:%M:%S") }}</td>
-                  <td>{{ item.pedido or "-" }}</td>
-                  <td>{{ item.total_parafusos }}</td>
-                  <td>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }}</td>
-                  <td>{{ item.status or "confirmada" }}</td>
-                </tr>
-                {% else %}
-                <tr><td colspan="5">Nenhum registro salvo hoje.</td></tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="nav">
-            <a class="button secondary" href="/export/csv/today">Baixar CSV do dia</a>
-            <a class="button secondary" href="/dashboard">Dashboard geral</a>
+        <section class="callout-card">
+          <div class="round-icon phone-icon" aria-hidden="true"></div>
+          <div>
+            <h3>Acesso r&aacute;pido no celular</h3>
+            <p>Use o link do t&uacute;nel ou acesse <strong>http://{{ local_ip }}:8000</strong> na mesma rede Wi-Fi.</p>
           </div>
         </section>
+
+        <section class="next-card">
+          <div>
+            <span>Pr&oacute;ximo passo</span>
+            <h3>Capture, conte e registre</h3>
+            <p>Use a c&acirc;mera do celular para fotografar os parafusos e obter a contagem autom&aacute;tica.</p>
+          </div>
+          <img src="/static/assets/capture_guide.png" alt="Exemplo de captura de parafusos">
+        </section>
+      {% else %}
+        <section class="card guide-card">
+          <div class="section-heading">
+            <div class="round-icon camera-icon" aria-hidden="true"></div>
+            <div>
+              <h2>Como fotografar corretamente</h2>
+              <p>Siga estas orienta&ccedil;&otilde;es para obter a melhor contagem de parafusos.</p>
+            </div>
+          </div>
+
+          <img class="hero-photo" src="/static/assets/capture_guide.png" alt="Guia de captura dos parafusos">
+
+          <div class="tip-grid">
+            <div class="tip-card">
+              <span class="mini-icon level-icon" aria-hidden="true"></span>
+              <strong>Mantenha a c&acirc;mera nivelada</strong>
+              <p>Evite inclina&ccedil;&otilde;es para reduzir erros de contagem.</p>
+            </div>
+            <div class="tip-card">
+              <span class="mini-icon light-icon" aria-hidden="true"></span>
+              <strong>Use boa ilumina&ccedil;&atilde;o</strong>
+              <p>Ambientes bem iluminados garantem melhores resultados.</p>
+            </div>
+            <div class="tip-card">
+              <span class="mini-icon target-icon" aria-hidden="true"></span>
+              <strong>Centralize os parafusos</strong>
+              <p>Deixe todos os parafusos dentro do enquadramento.</p>
+            </div>
+            <div class="tip-card">
+              <span class="mini-icon block-icon" aria-hidden="true"></span>
+              <strong>Evite sombras e reflexos</strong>
+              <p>Sombras e brilhos podem prejudicar a contagem.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card capture-card">
+          <div class="section-heading compact">
+            <div class="round-icon camera-icon" aria-hidden="true"></div>
+            <div>
+              <h2>Captura em andamento</h2>
+              <p>Colaborador ativo: <strong>{{ employee.nome }}</strong> &bull; YOLO11</p>
+            </div>
+          </div>
+
+          <div id="loading-overlay" class="loading-overlay" style="display:none;">
+            <div class="spinner"></div>
+            <strong>Analisando imagem...</strong>
+            <span>Pode levar alguns segundos</span>
+          </div>
+
+          <form id="predict-form" action="/predict" method="post" enctype="multipart/form-data" class="stack-form">
+            <div class="form-grid">
+              <div>
+                <label for="pedido">N&uacute;mero do pedido ou lote (opcional)</label>
+                <input id="pedido" name="pedido" type="text" autocomplete="off" placeholder="Ex.: OP-1024">
+              </div>
+              <div>
+                <label for="observacao">Observa&ccedil;&otilde;es (opcional)</label>
+                <input id="observacao" name="observacao" type="text" autocomplete="off" placeholder="Ex.: Mesa 03">
+              </div>
+            </div>
+
+            <label class="file-capture" for="imagem">
+              <input id="imagem" name="imagem" type="file" accept="image/*" capture="environment" required>
+              <span class="mini-icon camera-line-icon" aria-hidden="true"></span>
+              <strong>Iniciar captura</strong>
+              <small>No celular, toque para abrir a c&acirc;mera.</small>
+            </label>
+            <img id="preview" class="preview" alt="Pr&eacute;via da imagem selecionada">
+
+            <div class="status-row">
+              <span>Ilumina&ccedil;&atilde;o ok</span>
+              <span>Enquadramento bom</span>
+              <span>Detec&ccedil;&atilde;o autom&aacute;tica</span>
+            </div>
+
+            <button id="btn-contar" class="button full" type="submit">Contar parafusos</button>
+          </form>
+        </section>
+
+        <section class="card history-panel">
+          <div class="section-title-row">
+            <h2>Meus registros de hoje</h2>
+            <a href="/dashboard">Ver todos</a>
+          </div>
+          <div class="metric-grid">
+            <div class="metric">Confer&ecirc;ncias<strong>{{ summary.registros }}</strong></div>
+            <div class="metric">Parafusos<strong>{{ summary.parafusos }}</strong></div>
+            <div class="metric">Corre&ccedil;&otilde;es<strong>{{ summary.correcoes }}</strong></div>
+          </div>
+
+          <div class="recent-list">
+            {% for item in records_today %}
+              <div class="recent-item">
+                <span class="dot"></span>
+                <div>
+                  <strong>{{ item.total_corrigido if item.total_corrigido is not none else item.total_parafusos }} parafusos</strong>
+                  <small>{{ item.data_hora.strftime("%d/%m/%Y") }} &bull; {{ item.data_hora.strftime("%H:%M") }}{% if item.setor %} &bull; {{ item.setor }}{% endif %}</small>
+                </div>
+              </div>
+            {% else %}
+              <p class="empty-state">Nenhum registro salvo hoje.</p>
+            {% endfor %}
+          </div>
+
+          <div class="action-row">
+            <a class="button secondary" href="/dashboard">Dashboard</a>
+            <a class="button secondary" href="/export/pdf/today">Exportar PDF</a>
+          </div>
+          <div class="action-row single">
+            <a class="button ghost" href="/export/csv/today">Exportar CSV do dia</a>
+          </div>
+
+          <form action="/logout" method="post">
+            <button class="button ghost full" type="submit">Sair / trocar funcion&aacute;rio</button>
+          </form>
+        </section>
       {% endif %}
-    </main>
-  </section>
+    </section>
+  </main>
 
   <script>
     const input = document.querySelector("#imagem");
@@ -159,6 +205,18 @@
         if (!file) return;
         preview.src = URL.createObjectURL(file);
         preview.style.display = "block";
+      });
+    }
+
+    const form = document.querySelector("#predict-form");
+    const overlay = document.querySelector("#loading-overlay");
+    const btn = document.querySelector("#btn-contar");
+    if (form && overlay && btn) {
+      form.addEventListener("submit", () => {
+        if (!input || !input.files || input.files.length === 0) return;
+        overlay.style.display = "flex";
+        btn.disabled = true;
+        btn.textContent = "Enviando...";
       });
     }
   </script>
