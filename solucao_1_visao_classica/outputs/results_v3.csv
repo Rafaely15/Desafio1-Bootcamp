@@ -1,0 +1,6 @@
+imagem,contagem_real,contagem_detectada,erro_absoluto,n_componentes_pre_filtro,n_componentes_pos_filtro,ref_area_utilizada,metodo_predominante,fragmentacao_detectada,watershed_aplicado,notas
+img1.jpg,8,8,0,10,7,3333,contours,False,False,8 componentes limpos — contagem direta
+img2.jpg,1,1,0,349,60,4021,contours,False,False,DBSCAN agrupa fragmentos do parafuso longo
+img3.jpg,4,4,0,7,4,4223,isolado,False,False,Filtro aspect>8 remove artefato linear
+img4.jpg,2,2,0,2,2,4377,fragmento_isolado,True,False,Caso de calibração — mais limpo
+img5.jpg,10,10,0,9,4,4021,contours,False,False,Blob único: watershed + fallback por área; erro esperado 0-2

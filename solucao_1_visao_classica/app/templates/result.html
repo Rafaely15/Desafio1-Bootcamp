@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metal Mecânica - Resultado da contagem</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="brandbar">
+    <div class="brandbar-inner">
+      <h1>Metal Mecânica</h1>
+      <span>Contador de Parafusos</span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <nav class="nav">
+      <a class="button secondary" href="/">Nova contagem</a>
+      <a class="button secondary" href="/dashboard">Dashboard</a>
+      <a class="button secondary" href="/export/csv/today">CSV do dia</a>
+    </nav>
+
+    <section class="result-grid">
+      <div>
+        <img class="result-image" src="{{ imagem_processada_url }}" alt="Imagem processada com detecções">
+        <div class="quality-ok">Foto processada. Revise a imagem antes de considerar a contagem final.</div>
+      </div>
+
+      <aside class="panel">
+        <div class="success-count">
+          <span>Contagem estimada</span>
+          <strong>{{ registro.total_parafusos }}</strong>
+          <span>parafusos</span>
+        </div>
+
+        <div class="metric">Confiança media<strong>{{ "%.2f"|format(registro.confianca_media) }}</strong></div>
+        <div class="metric">Funcionário<strong>{{ registro.funcionario_nome }}</strong></div>
+        {% if registro.funcionario_id %}<div class="metric">Matrícula/ID<strong>{{ registro.funcionario_id }}</strong></div>{% endif %}
+        {% if registro.pedido %}<div class="metric">Pedido/lote<strong>{{ registro.pedido }}</strong></div>{% endif %}
+        <div class="metric">Data e hora<strong>{{ registro.data_hora.strftime("%d/%m/%Y %H:%M:%S") }}</strong></div>
+
+        <form action="/record/{{ registro.id }}/correct" method="post">
+          <h3>A contagem está correta?</h3>
+          <label for="total_corrigido">Contagem final</label>
+          <input id="total_corrigido" name="total_corrigido" type="number" min="0" value="{{ registro.total_parafusos }}" required>
+          <label for="observacao">Observação da conferência</label>
+          <textarea id="observacao" name="observacao">{{ registro.observacao or "" }}</textarea>
+          <button type="submit">Salvar confirmação/correção</button>
+        </form>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

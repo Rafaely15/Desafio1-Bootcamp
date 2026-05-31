@@ -1,0 +1,7 @@
+imagem,contagem,segmentacao,noise_ratio,n_total,n_big,ref_area_usada,fragmentacao,watershed
+img1.jpg,8,padrao,0.7714,35,8,4021.0,False,False
+img2.jpg,1,blur_adaptativo,0.9593,442,17,4021.0,False,False
+img3.jpg,4,padrao,0.8333,30,5,4021.0,False,False
+img4.jpg,2,padrao,0.7143,7,2,4021.0,False,False
+img5.jpg,8,padrao,0.9643,28,1,4021.0,False,True
+img6.jpg,5,padrao,0.6429,14,5,5708.5,False,False

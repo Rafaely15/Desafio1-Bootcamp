@@ -1,0 +1,19 @@
+# Visão clássica e processamento de imagem
+opencv-python
+numpy
+scikit-learn
+
+# Interface web (FastAPI)
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+sqlalchemy
+
+# Streamlit (versão alternativa — app.py)
+streamlit==1.39.0
+
+# Utilitários
+pandas
+pillow
+tabulate

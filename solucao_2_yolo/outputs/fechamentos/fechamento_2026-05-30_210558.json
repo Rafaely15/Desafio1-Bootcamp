@@ -1,0 +1,20 @@
+{
+  "empresa": "Metal Mecânica",
+  "data": "2026-05-30",
+  "registrado_em": "2026-05-30T21:05:58",
+  "resumo": {
+    "registros": 7,
+    "automatico": 48,
+    "final": 47,
+    "correcoes": 1
+  },
+  "registros": [
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37
+  ]
+}
