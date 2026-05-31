@@ -1,0 +1,28 @@
+INFO:     127.0.0.1:52011 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:21f5:6693:a360:4e20:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:21f5:6693:a360:4e20:0 - "GET /favicon.ico HTTP/1.1" 307 Temporary Redirect
+INFO:     2804:590c:1fcf:fc00:21f5:6693:a360:4e20:0 - "GET /static/favicon.ico HTTP/1.1" 404 Not Found
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /static/assets/capture_guide.png HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /static/css/style.css HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /favicon.ico HTTP/1.1" 307 Temporary Redirect
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /static/favicon.ico HTTP/1.1" 404 Not Found
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "POST /login HTTP/1.1" 303 See Other
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /static/results/20260531_172614_3b387e83fc5e43e488372445aa44649e_20260531_172616_009219.jpg HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /static/results/20260531_172650_8b092bbc797b4b54976fe01d8f2b1f11_20260531_172650_715929.jpg HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "POST /record/54/correct HTTP/1.1" 303 See Other
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /static/results/20260531_172725_2a9ca575267246b89fce8b9e7a5405d3_20260531_172725_838281.jpg HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /static/results/20260531_172757_22244a7ee45546de889bd2e6927f3838_20260531_172757_997805.jpg HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     2804:590c:1fcf:fc00:924e:e0b:85e3:fc2a:0 - "GET /dashboard HTTP/1.1" 200 OK

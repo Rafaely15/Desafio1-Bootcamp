@@ -1,0 +1,6 @@
+INFO:     127.0.0.1:57273 - "GET / HTTP/1.1" 200 OK
+INFO:     10.0.0.137:50037 - "GET / HTTP/1.1" 200 OK
+INFO:     10.0.0.137:50037 - "GET /static/css/style.css HTTP/1.1" 200 OK
+INFO:     10.0.0.137:61160 - "GET /static/assets/capture_guide.png HTTP/1.1" 200 OK
+INFO:     10.0.0.137:61160 - "GET /favicon.ico HTTP/1.1" 307 Temporary Redirect
+INFO:     10.0.0.137:61160 - "GET /static/favicon.ico HTTP/1.1" 404 Not Found
