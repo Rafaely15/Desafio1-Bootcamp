@@ -14,34 +14,49 @@
 \contentsline {subsection}{\numberline {2.4}Modulo de Calibra\c {c}\~ao}{6}{subsection.2.4}%
 \contentsline {subsection}{\numberline {2.5}Avalia\c {c}\~ao e M\'etricas}{6}{subsection.2.5}%
 \contentsline {subsection}{\numberline {2.6}Qualidade de Captura}{6}{subsection.2.6}%
-\contentsline {section}{\numberline {3}Solu\c {c}\~ao 2 -- Detec\c {c}\~ao com YOLOv11}{7}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Motiva\c {c}\~ao}{7}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Dataset}{7}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Treinamento}{7}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}M\'odulo de Infer\^encia}{8}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}Hiperpar\^ametros de Infer\^encia}{8}{subsection.3.5}%
-\contentsline {subsection}{\numberline {3.6}Exporta\c {c}\~ao Mobile}{8}{subsection.3.6}%
-\contentsline {section}{\numberline {4}Aplica\c {c}\~ao Web Compartilhada}{9}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Por que FastAPI?}{9}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Fluxo de uma requisi\c {c}\~ao}{9}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Rotas Principais}{10}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Banco de Dados -- Modelo ORM}{10}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Funcionalidades Exclusivas da Solu\c {c}\~ao 1 (Web)}{10}{subsection.4.5}%
-\contentsline {subsection}{\numberline {4.6}Conex\~ao via Smartphone}{11}{subsection.4.6}%
-\contentsline {section}{\numberline {5}An\'alise Comparativa das Solu\c {c}\~oes}{11}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Compara\c {c}\~ao T\'ecnica}{12}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Cen\'arios Favor\'aveis a Cada Solu\c {c}\~ao}{12}{subsection.5.2}%
-\contentsline {section}{\numberline {6}Veredicto: Qual Solu\c {c}\~ao \'e Melhor?}{13}{section.6}%
-\contentsline {section}{\numberline {7}Crit\'erios de Avalia\c {c}\~ao -- Resposta Direta}{13}{section.7}%
-\contentsline {subsection}{\numberline {7.1}1. Organiza\c {c}\~ao e Estrutura\c {c}\~ao do C\'odigo}{13}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}2. Criatividade na Proposta}{13}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}3. Clareza nos Crit\'erios de Tomada de Decis\~ao}{14}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}4. Capacidade Anal\'itica}{14}{subsection.7.4}%
-\contentsline {subsection}{\numberline {7.5}B\^onus: Solu\c {c}\~ao em Aplica\c {c}\~ao Web}{14}{subsection.7.5}%
-\contentsline {subsection}{\numberline {7.6}B\^onus: Baixo Recurso Computacional}{14}{subsection.7.6}%
-\contentsline {section}{\numberline {8}Instru\c {c}\~oes de Execu\c {c}\~ao}{15}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Solu\c {c}\~ao 1 -- Vis\~ao Cl\'assica}{15}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Solu\c {c}\~ao 2 -- YOLOv11}{15}{subsection.8.2}%
-\contentsline {section}{\numberline {9}Conclus\~ao}{15}{section.9}%
-\contentsline {section}{\numberline {A}Estrutura de Arquivos}{15}{appendix.A}%
-\contentsline {section}{\numberline {B}Depend\^encias Principais}{16}{appendix.B}%
+\contentsline {subsection}{\numberline {2.7}Resultados Pr\'aticos -- Testes com Novas Imagens}{7}{subsection.2.7}%
+\contentsline {subsection}{\numberline {2.8}Grade de Debug -- Pipeline Interno}{7}{subsection.2.8}%
+\contentsline {subsection}{\numberline {2.9}M\'etricas de Avalia\c {c}\~ao -- Vis\~ao Cl\'assica}{8}{subsection.2.9}%
+\contentsline {subsection}{\numberline {2.10}Grid de Resultados Consolidado}{9}{subsection.2.10}%
+\contentsline {section}{\numberline {3}Solu\c {c}\~ao 2 -- Detec\c {c}\~ao com YOLOv11}{10}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Motiva\c {c}\~ao}{10}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Dataset}{11}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Treinamento}{11}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}M\'odulo de Infer\^encia}{12}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Hiperpar\^ametros de Infer\^encia}{12}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Exporta\c {c}\~ao Mobile}{12}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}M\'etricas do Treinamento -- Curvas e Evolu\c {c}\~ao}{13}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Matriz de Confus\~ao}{13}{subsection.3.8}%
+\contentsline {subsection}{\numberline {3.9}Curvas de Precis\~ao, Recall e F1}{14}{subsection.3.9}%
+\contentsline {subsection}{\numberline {3.10}Lotes de Valida\c {c}\~ao}{15}{subsection.3.10}%
+\contentsline {subsection}{\numberline {3.11}Resultados Pr\'aticos -- Testes com Novas Imagens}{15}{subsection.3.11}%
+\contentsline {section}{\numberline {4}Aplica\c {c}\~ao Web Compartilhada}{16}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Por que FastAPI?}{16}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Fluxo de uma requisi\c {c}\~ao}{16}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Rotas Principais}{17}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Banco de Dados -- Modelo ORM}{17}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Funcionalidades Exclusivas da Solu\c {c}\~ao 1 (Web)}{17}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Conex\~ao via Smartphone}{18}{subsection.4.6}%
+\contentsline {section}{\numberline {5}Processo de Design -- UX/UI da Aplica\c {c}\~ao}{18}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Contexto e Objetivos do Design}{18}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Prot\'otipo de Interface -- UX/UI}{18}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Decis\~oes de Design Justificadas}{20}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Fluxo de Navega\c {c}\~ao}{20}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Responsividade e Compatibilidade Mobile}{20}{subsection.5.5}%
+\contentsline {section}{\numberline {6}An\'alise Comparativa das Solu\c {c}\~oes}{21}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Compara\c {c}\~ao T\'ecnica}{21}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Cen\'arios Favor\'aveis a Cada Solu\c {c}\~ao}{22}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Veredicto: Qual Solu\c {c}\~ao \'e Melhor?}{22}{section.7}%
+\contentsline {section}{\numberline {8}Crit\'erios de Avalia\c {c}\~ao -- Resposta Direta}{22}{section.8}%
+\contentsline {subsection}{\numberline {8.1}1. Organiza\c {c}\~ao e Estrutura\c {c}\~ao do C\'odigo}{22}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}2. Criatividade na Proposta}{23}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}3. Clareza nos Crit\'erios de Tomada de Decis\~ao}{23}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}4. Capacidade Anal\'itica}{23}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}B\^onus: Solu\c {c}\~ao em Aplica\c {c}\~ao Web}{24}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}B\^onus: Baixo Recurso Computacional}{24}{subsection.8.6}%
+\contentsline {section}{\numberline {9}Instru\c {c}\~oes de Execu\c {c}\~ao}{24}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Solu\c {c}\~ao 1 -- Vis\~ao Cl\'assica}{24}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Solu\c {c}\~ao 2 -- YOLOv11}{24}{subsection.9.2}%
+\contentsline {section}{\numberline {10}Conclus\~ao}{24}{section.10}%
+\contentsline {section}{\numberline {A}Estrutura de Arquivos}{25}{appendix.A}%
+\contentsline {section}{\numberline {B}Depend\^encias Principais}{26}{appendix.B}%

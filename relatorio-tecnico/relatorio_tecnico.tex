@@ -377,6 +377,113 @@ parafusos cortados na borda, e baixa confian\c{c}a do ensemble.
 \end{itemize}
 \end{tcolorbox}
 
+%% --- Resultados Praticos OpenCV ---
+\subsection{Resultados Pr\'aticos -- Testes com Novas Imagens}
+
+Para validar o pipeline cl\'assico em condi\c{c}\~oes reais, o sistema foi testado com
+novas imagens fornecidas fora do conjunto de calibra\c{c}\~ao. A
+Figura~\ref{fig:opencv-resultados} apresenta tr\^es resultados representativos, onde
+cada parafuso detectado recebe uma caixa delimitadora colorida de acordo com o detector
+que o identificou (\textcolor{green}{verde} = contorno isolado,
+\textcolor{orange}{laranja} = watershed, \textcolor{red}{vermelho} = DBSCAN).
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.31\textwidth}
+    \includegraphics[width=\linewidth]{opencv1.jpeg}
+    \caption{Resultado OpenCV -- imagem 1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.31\textwidth}
+    \includegraphics[width=\linewidth]{opencv2.jpeg}
+    \caption{Resultado OpenCV -- imagem 2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.31\textwidth}
+    \includegraphics[width=\linewidth]{opencv3.jpeg}
+    \caption{Resultado OpenCV -- imagem 3}
+  \end{subfigure}
+  \caption{Resultados pr\'aticos do pipeline cl\'assico em novas imagens.}
+  \label{fig:opencv-resultados}
+\end{figure}
+
+\subsection{Grade de Debug -- Pipeline Interno}
+
+A Figura~\ref{fig:grid-debug} exibe a grade de debug gerada pela fun\c{c}\~ao
+\texttt{make\_debug\_grid}, mostrando os est\'agios internos do pipeline: imagem
+original, pr\'e-processada (CLAHE), m\'ascara bin\'aria, \emph{distance transform},
+mapa de picos (watershed) e imagem anotada final. Esta visualiza\c{c}\~ao \'e
+fundamental para auditar e depurar casos-limite.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img1_debug.jpg}
+    \caption{Debug -- imagem 1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img2_debug.jpg}
+    \caption{Debug -- imagem 2}
+  \end{subfigure}
+
+  \vspace{0.5em}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img3_debug.jpg}
+    \caption{Debug -- imagem 3}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img4_debug.jpg}
+    \caption{Debug -- imagem 4}
+  \end{subfigure}
+
+  \vspace{0.5em}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img5_debug.jpg}
+    \caption{Debug -- imagem 5}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{img6_debug.jpg}
+    \caption{Debug -- imagem 6}
+  \end{subfigure}
+  \caption{Grades de debug do pipeline cl\'assico: cada painel exibe os est\'agios de
+           pr\'e-processamento, segmenta\c{c}\~ao, \emph{distance transform} e resultado.}
+  \label{fig:grid-debug}
+\end{figure}
+
+\subsection{M\'etricas de Avalia\c{c}\~ao -- Vis\~ao Cl\'assica}
+
+As Figuras~\ref{fig:avaliacao-v3} e~\ref{fig:discriminacao-v3} apresentam, respectivamente,
+o painel de avalia\c{c}\~ao quantitativa (MAE, acur\'acia exata e vi\'es por imagem) e a
+an\'alise de discrimina\c{c}\~ao de \emph{features} usadas pelo classificador de cena.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\linewidth]{avaliacao_v3.png}
+  \caption{Painel de avalia\c{c}\~ao quantitativa da Solu\c{c}\~ao 1: MAE, acur\'acia
+           exata e erros assinados por imagem.}
+  \label{fig:avaliacao-v3}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\linewidth]{discriminacao_features_v3.png}
+  \caption{An\'alise das \emph{features} de discrimina\c{c}\~ao de cena usadas pelo
+           \texttt{classify\_scene}: brilho, contraste, textura e densidade.}
+  \label{fig:discriminacao-v3}
+\end{figure}
+
+\subsection{Grid de Resultados Consolidado}
+
+A Figura~\ref{fig:grid-v3} apresenta o painel consolidado com todos os resultados
+de contagem do pipeline cl\'assico sobre o conjunto de imagens avaliado, permitindo
+visualizar de forma comparativa o desempenho em diferentes cen\'arios.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{grid_resultados_v3.png}
+  \caption{Grid consolidado de resultados da Solu\c{c}\~ao 1 (Vis\~ao Cl\'assica):
+           contagem detectada \textit{vs.} contagem real em cada imagem avaliada.}
+  \label{fig:grid-v3}
+\end{figure}
+
 %% ============================================================
 \section{Solu\c{c}\~ao 2 -- Detec\c{c}\~ao com YOLOv11}
 \label{sec:sol2}
@@ -511,6 +618,138 @@ Scripts dedicados convertem o modelo para formatos otimizados:
 \end{itemize}
 \end{tcolorbox}
 
+%% --- Metricas de treinamento YOLO ---
+\subsection{M\'etricas do Treinamento -- Curvas e Evolu\c{c}\~ao}
+
+A seguir s\~ao apresentadas as curvas de treinamento geradas automaticamente pelo
+Ultralytics ao longo das 100 \'epocas do modelo selecionado
+(\texttt{yolo11\_screws-2}).
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{treinamento-yolo1.jpg}
+    \caption{Curvas de perda de \emph{box}, classifica\c{c}\~ao e DFL}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{treinamento-yolo2.jpg}
+    \caption{M\'etricas de valida\c{c}\~ao: precision, recall, mAP50 e mAP50-95}
+  \end{subfigure}
+
+  \vspace{0.5em}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{treinamento-yolo3.jpg}
+    \caption{Evolu\c{c}\~ao do mAP ao longo das \'epocas}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{treinamento-yoo4.jpg}
+    \caption{Taxa de aprendizado e \emph{warmup}}
+  \end{subfigure}
+  \caption{Curvas de treinamento do YOLOv11 (\texttt{yolo11\_screws-2}, 100 \'epocas,
+           \texttt{imgsz=768}, GPU CUDA).}
+  \label{fig:yolo-treino}
+\end{figure}
+
+\subsection{Matriz de Confus\~ao}
+
+A matriz de confus\~ao \'e a principal ferramenta para avaliar se o modelo comete erros
+de \emph{falso positivo} (detecta parafuso onde n\~ao h\'a) ou \emph{falso negativo}
+(n\~ao detecta um parafuso presente). A Figura~\ref{fig:conf-matrix} apresenta as
+vers\~oes absoluta e normalizada.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{confusion_matrix.png}
+    \caption{Matriz de confus\~ao (valores absolutos)}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{confusion_matrix_normalized.png}
+    \caption{Matriz de confus\~ao normalizada}
+  \end{subfigure}
+  \caption{Matrizes de confus\~ao do YOLOv11 sobre o conjunto de teste.
+           A diagonal principal concentra as detec\c{c}\~oes corretas;
+           elementos fora da diagonal representam erros de classifica\c{c}\~ao.}
+  \label{fig:conf-matrix}
+\end{figure}
+
+\subsection{Curvas de Precis\~ao, Recall e F1}
+
+As curvas de precis\~ao (P), recall (R), F1 e PR (\emph{Precision-Recall}) oferecem
+uma vis\~ao completa do comportamento do modelo para diferentes limiares de confian\c{c}a.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{BoxP_curve.png}
+    \caption{Curva de Precis\~ao (P)}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{BoxR_curve.png}
+    \caption{Curva de Recall (R)}
+  \end{subfigure}
+
+  \vspace{0.5em}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{BoxF1_curve.png}
+    \caption{Curva F1 \emph{vs.} limiar de confian\c{c}a}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{BoxPR_curve.png}
+    \caption{Curva PR (\emph{Precision-Recall})}
+  \end{subfigure}
+  \caption{Curvas de avalia\c{c}\~ao do YOLOv11 sobre o conjunto de valida\c{c}\~ao.
+           O limiar \texttt{conf=0.25} foi selecionado a partir da an\'alise da
+           curva F1 como ponto de m\'aximo equil\'ibrio entre precis\~ao e recall.}
+  \label{fig:yolo-curvas}
+\end{figure}
+
+\subsection{Lotes de Valida\c{c}\~ao}
+
+A Figura~\ref{fig:val-batch} apresenta lotes do conjunto de valida\c{c}\~ao com os
+r\'otulos reais sobrepostos, permitindo inspec\~ao visual da qualidade das anota\c{c}\~oes
+e do alinhamento com as predi\c{c}\~oes do modelo.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{val_batch0_labels.jpg}
+    \caption{Lote de valida\c{c}\~ao 0 -- r\'otulos reais}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\linewidth]{val_batch1_labels.jpg}
+    \caption{Lote de valida\c{c}\~ao 1 -- r\'otulos reais}
+  \end{subfigure}
+  \caption{Lotes de valida\c{c}\~ao com \emph{bounding boxes} anotadas pelo dataset.}
+  \label{fig:val-batch}
+\end{figure}
+
+\subsection{Resultados Pr\'aticos -- Testes com Novas Imagens}
+
+O modelo YOLOv11 foi testado com novas imagens n\~ao vistas durante o treinamento.
+A Figura~\ref{fig:yolo-resultados} mostra a detec\c{c}\~ao em tr\^es cen\'arios
+distintos, com as \emph{bounding boxes} e pontuac\~oes de confian\c{c}a exibidas
+sobre cada parafuso detectado.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.31\textwidth}
+    \includegraphics[width=\linewidth]{yolo1.jpeg}
+    \caption{Resultado YOLO -- imagem 1}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.31\textwidth}
+    \includegraphics[width=\linewidth]{yolo2.jpeg}
+    \caption{Resultado YOLO -- imagem 2}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.31\textwidth}
+    \includegraphics[width=\linewidth]{yolo3.jpeg}
+    \caption{Resultado YOLO -- imagem 3}
+  \end{subfigure}
+  \caption{Resultados pr\'aticos do YOLOv11 em novas imagens: cada caixa exibe o
+           r\'otulo \texttt{parafuso} e a confian\c{c}a da detec\c{c}\~ao.}
+  \label{fig:yolo-resultados}
+\end{figure}
+
 %% ============================================================
 \section{Aplica\c{c}\~ao Web Compartilhada}
 \label{sec:web}
@@ -616,6 +855,116 @@ def get_local_ip() -> str:
     except Exception:
         return "127.0.0.1"
 \end{lstlisting}
+
+%% ============================================================
+\section{Processo de Design -- UX/UI da Aplica\c{c}\~ao}
+\label{sec:uxui}
+
+\subsection{Contexto e Objetivos do Design}
+
+O design da interface foi guiado por tr\^es princ\'ipios fundamentais, diretamente
+relacionados ao perfil dos usu\'arios (operadores de \emph{picking} sem treinamento
+t\'ecnico e com mãos ocupadas durante o trabalho):
+
+\begin{description}[leftmargin=*, style=nextline]
+  \item[Simplicidade radical:] o fluxo completo -- login, foto, resultado -- deve ser
+    conclu\'ido em no m\'aximo tr\^es toques na tela. Nenhuma configura\c{c}\~ao
+    t\'ecnica \'e exposta ao operador.
+
+  \item[Feedback imediato:] o resultado da contagem \'e exibido em destaque logo ap\'os
+    o envio da imagem, com a foto anotada ao lado para inspe\c{c}\~ao visual r\'apida.
+
+  \item[Recupera\c{c}\~ao de erros:] todo registro permite corre\c{c}\~ao manual com
+    um campo num\'erico simples, garantindo que nenhum erro do modelo impacte o processo
+    de forma irrecuper\'avel.
+\end{description}
+
+\subsection{Prot\'otipo de Interface -- UX/UI}
+
+O prot\'otipo foi criado antes da implementa\c{c}\~ao do \emph{backend}, seguindo a
+metodologia \emph{design-first}: as telas foram validadas conceitualmente antes do
+desenvolvimento, garantindo que a estrutura do c\'odigo suportasse exatamente o fluxo
+projetado.
+
+A Figura~\ref{fig:prototipo} apresenta o prot\'otipo de alta fidelidade da aplica\c{c}\~ao,
+cobrindo as telas principais: login do operador, envio de imagem, resultado da contagem,
+hist\'orico do dia e dashboard de gest\~ao.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{prototipo-designer-ux-ui_app_contagem_parafusos.png}
+  \caption{Prot\'otipo UX/UI da aplica\c{c}\~ao de contagem de parafusos. Da esquerda
+           para a direita: tela de login, tela de captura/envio de foto, tela de resultado
+           com imagem anotada e contador em destaque, hist\'orico do operador e
+           dashboard de gest\~ao.}
+  \label{fig:prototipo}
+\end{figure}
+
+\subsection{Decis\~oes de Design Justificadas}
+
+\begin{table}[H]
+  \centering
+  \caption{Principais decis\~oes de UX/UI e suas justificativas}
+  \label{tab:ux}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{p{4.2cm}p{4.2cm}p{4.2cm}}
+    \toprule
+    \textbf{Decis\~ao} & \textbf{Alternativa descartada} & \textbf{Justificativa} \\
+    \midrule
+    Contador central em fonte grande
+      & Tabela com detalhes t\'ecnicos
+      & Operador precisa confirmar o n\'umero rapidamente, sem ler \\
+    Login por nome + matr\'icula
+      & Senha alfanum\'erica
+      & F\'acil de digitar com luvas; rastreabilidade sem senha \\
+    Imagem anotada exibida imediatamente
+      & S\'o o n\'umero
+      & Permite inspe\c{c}\~ao visual antes de confirmar \\
+    Bot\~ao de corre\c{c}\~ao sempre vis\'ivel
+      & Corre\c{c}\~ao apenas no dashboard
+      & Erro detectado no momento certo, sem voltar telas \\
+    Acesso via Wi-Fi + navegador
+      & Aplicativo nativo instalado
+      & Sem instala\c{c}\~ao, sem atualiza\c{c}\~oes manuais \\
+    Dashboard com agrupamento por dia
+      & Lista plana cronol\'ogica
+      & Facilita o fechamento di\'ario e auditoria por turno \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Fluxo de Navega\c{c}\~ao}
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.88\textwidth}
+\centering
+\textbf{Login} (nome + matr\'icula + setor)\\
+$\downarrow$\\
+\textbf{Tela principal} -- enviar foto do pedido\\
+$\downarrow$\\
+\textbf{Resultado} -- contador + imagem anotada + campo de corre\c{c}\~ao\\
+$\downarrow$ \quad\quad $\swarrow$ (se correto)\\
+\textbf{Dashboard} -- hist\'orico agrupado por dia + fechamento\\
+$\downarrow$\\
+\textbf{Exporta\c{c}\~ao} -- CSV ou PDF corporativo
+\end{minipage}
+}
+\end{center}
+
+\subsection{Responsividade e Compatibilidade Mobile}
+
+A interface foi projetada para funcionar em \textbf{qualquer navegador moderno}, sem
+instala\c{c}\~ao de aplicativo. Os pontos-chave de responsividade s\~ao:
+
+\begin{itemize}[leftmargin=*]
+  \item Layout em coluna \'unica em telas estreitas (\emph{smartphones}).
+  \item Bot\~oes com \'area de toque m\'inima de 48$\times$48\,px (diretrizes WCAG).
+  \item Campo de upload de foto ativando diretamente a c\^amera do dispositivo
+        (\texttt{accept="image/*"} + \texttt{capture="environment"}).
+  \item IP do servidor exibido automaticamente na tela inicial para facilitar
+        a conex\~ao dos operadores na rede Wi-Fi.
+\end{itemize}
 
 %% ============================================================
 \section{An\'alise Comparativa das Solu\c{c}\~oes}
