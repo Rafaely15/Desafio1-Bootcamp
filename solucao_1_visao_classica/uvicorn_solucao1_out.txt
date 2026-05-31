@@ -1,0 +1,14 @@
+INFO:     127.0.0.1:59533 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:99c:8e0b:14ab:c100:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET /static/assets/capture_guide.png HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET /static/css/style.css HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET /favicon.ico HTTP/1.1" 307 Temporary Redirect
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET /static/favicon.ico HTTP/1.1" 404 Not Found
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "POST /login HTTP/1.1" 303 See Other
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET / HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET /static/results/result_20260531_194650_5039c20fa6874acab0b4186c5b696656.jpg HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "POST /predict HTTP/1.1" 200 OK
+INFO:     2804:7f7:3000:5f89:56d1:6a3e:a67e:97c5:0 - "GET /static/results/result_20260531_194747_1846cc0d3eb142b1b850237d50bcb88d.jpg HTTP/1.1" 200 OK
